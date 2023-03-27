@@ -1,0 +1,10 @@
+tqdm~=4.64.0
+fire~=0.4.0
+numpy~=1.22.4
+scipy~=1.8.1
+pandas~=1.4.2
+torch~=1.11.0
+pyrwr~=1.0.0
+matplotlib~=3.7.1
+networkx~=3.0
+setuptools~=65.5.1
