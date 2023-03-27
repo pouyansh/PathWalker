@@ -18,6 +18,7 @@ targets_path = "data/Wnt/Wnt-targets.txt"
 pathway_path = "data/Wnt/Wnt-pathlinker-net.txt"
 
 
+# This method computes the edge weights based on the given method
 def compute_new_graph(method, alpha=0.0):
     if method == "m1":
         return np.array(
@@ -25,7 +26,7 @@ def compute_new_graph(method, alpha=0.0):
              graph])
     if method == "m2":
         return np.array(
-            [[int(edge[0]), int(edge[1]), math.pow(2, -float(length[edge[0]] + length[edge[1]]))] for edge in graph])
+            [[int(edge[0]), int(edge[1]), math.pow(2, -alpha * float(length[edge[0]] + length[edge[1]]))] for edge in graph])
     if method == "m3":
         return np.array(
             [[int(edge[0]), int(edge[1]), 1 / (length[edge[0]] * length[edge[1]] + alpha)] for edge in graph])
@@ -36,7 +37,7 @@ def compute_new_graph(method, alpha=0.0):
         return np.array([[int(edge[0]), int(edge[1]), math.pow(2, -float(edge[2]))] for edge in graph])
 
 
-def compute_recall_precision(sorted_edges, known_pathway, recall_bound=0.5):
+def compute_recall_precision(sorted_edges, known_pathway, recall_bound=1.0):
     recalls = []
     precisions = []
     tp = 0
@@ -65,7 +66,7 @@ def compute_edge_probs(adj_list, r):
 def run_random_walk(new_graph):
     ppr = PPR()
     ppr.read_graph(new_graph, True)
-    return ppr.compute(seeds, c=0.25, max_iters=1000)
+    return ppr.compute(seeds, c=0.10, max_iters=1000)
 
 
 def run_algorithm(method, color, alpha=0.0):
@@ -134,12 +135,13 @@ length = nx.multi_source_dijkstra_path_length(G, targets)
 max_length = max(length.values())
 
 
-run_algorithm(method="m1", color='b', alpha=0.01)
-run_algorithm(method="m1", color='r', alpha=0.1)
-run_algorithm(method="m2", color='k')
-run_algorithm(method="m3", color='g', alpha=0.001)
-run_algorithm(method="m4", color='c', alpha=0.001)
+# run_algorithm(method="m1", color='b', alpha=0.01)
+# run_algorithm(method="m1", color='r', alpha=0.1)
+# run_algorithm(method="m2", color='k', alpha=1)
+run_algorithm(method="m2", color='k', alpha=25)
+# run_algorithm(method="m3", color='g', alpha=0.001)
+# run_algorithm(method="m4", color='c', alpha=0.001)
 run_algorithm(method="rwr", color='y')
 plt.legend()
 
-plt.show()
+plt.savefig("full-10precent-pow25rwr.png")
