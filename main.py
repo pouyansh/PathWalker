@@ -12,7 +12,7 @@ G = nx.Graph()
 
 colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 
-data = "TGF_beta_Receptor"
+data = "Wnt"
 
 input_graph = "data/interactome-weights.txt"
 graph_type = "directed"
@@ -42,6 +42,7 @@ def compute_new_graph(method, alpha=0.0):
     if method == "m4":
         return np.array(
             [[int(edge[0]), int(edge[1]), 1 / (length[edge[1]] + alpha)] for edge in graph])
+    # This is our main weighting method
     if method == "ours":
         return np.array(
             [[int(edge[0]), int(edge[1]), math.pow(2, -alpha * float(edge[2] + length[edge[1]]))] for edge in graph])
@@ -81,7 +82,7 @@ def run_random_walk(new_graph, c=0.15):
     return ppr.compute(seeds, c=c, max_iters=1000)
 
 
-def run_algorithm(method, color, alpha=0.0, c=0.15):
+def run_algorithm(method, color, alpha=0.0, c=0.15, k=300):
     new_graph = compute_new_graph(method, alpha)
     # creating the graph using the new weights
     adj_list = {}
@@ -104,6 +105,9 @@ def run_algorithm(method, color, alpha=0.0, c=0.15):
 
     name = method
     plt.plot(recalls, precisions, color=color, label=name)
+
+    # computing the highest ranked edges
+    return [[sorted_edges[i][0][0], sorted_edges[i][0][1]] for i in range(max(k, len(sorted_edges)))]
 
 
 def read_pathway(path):
@@ -137,21 +141,22 @@ def read_pathlinker_output(path):
             splitted = line.split()
             sp = splitted[2].split('|')
             for i in range(len(sp) - 1):
-                if sp[i] in nodes and sp[i+1] in nodes:
+                if sp[i] in nodes and sp[i + 1] in nodes:
                     edge = [nodes[sp[i]], nodes[sp[i + 1]]]
                     if edge not in edges:
                         edges.append(edge)
-                else:
-                    print(sp)
     return [[edge] for edge in edges]
 
 
-def add_pathlinker(path, color):
+def add_pathlinker(path, color, k=300):
     edges = read_pathlinker_output(path)
     recalls, precisions = compute_recall_precision(edges, subpathway)
 
     name = "PathLinker"
     plt.plot(recalls, precisions, color=color, label=name)
+
+    # computing the highest ranked edges
+    return [[edges[i][0][0], edges[i][0][1]] for i in range(max(k, len(edges)))]
 
 
 # reading the graph
@@ -163,12 +168,14 @@ seeds, targets = read_source_and_destinations(rtf_path)
 # reading pathway
 pathway = read_pathway(pathway_path)
 
+# removing the set of edges in the pathway that are not in the interactome
 subpathway = []
 for p in pathway:
     for e in graph:
         if e[0] == p[0] and e[1] == p[1]:
             subpathway.append(p)
 
+# creating the networkx graph
 G.add_nodes_from(nodes)
 for e in graph:
     G.add_edge(int(e[1]), int(e[0]), weight=e[2])
@@ -177,15 +184,9 @@ for e in graph:
 length = nx.multi_source_dijkstra_path_length(G, targets)
 max_length = max(length.values())
 
-# run_algorithm(method="m1", color='b', alpha=0.01)
-# run_algorithm(method="m1", color='r', alpha=0.1)
-# run_algorithm(method="m2", color='k', alpha=1)
-# run_algorithm(method="m2", color='c', alpha=10)
-run_algorithm(method="ours", color=colors["deepskyblue"], alpha=5, c=0.25)
-# run_algorithm(method="m3", color='g', alpha=0.001)
-# run_algorithm(method="m4", color='c', alpha=0.001)
-run_algorithm(method="rwr", color=colors["silver"])
-add_pathlinker(pathlinker, color=colors["black"])
+pathway_ours = run_algorithm(method="ours", color=colors["deepskyblue"], alpha=5, c=0.25, k=300)
+pathway_rwr = run_algorithm(method="rwr", color=colors["silver"], k=300)
+pathway_pathlinker = add_pathlinker(pathlinker, color=colors["black"], k=300)
 plt.legend()
 plt.title("recall-precision for " + data)
 
