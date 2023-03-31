@@ -84,6 +84,7 @@ def read_graph(path, graph_type):
 
     node_to_id = {}
     counter = 0
+    Y = []
     for row in X:
         if row[0] not in node_to_id:
             node_to_id[row[0]] = counter
@@ -91,10 +92,10 @@ def read_graph(path, graph_type):
         if row[1] not in node_to_id:
             node_to_id[row[1]] = counter
             counter += 1
-        row[0] = int(node_to_id[row[0]])
-        row[1] = int(node_to_id[row[1]])
-        row[2] = float(-(math.log2(float(row[2]))))
-    # print(X)
+        if float(row[2]) > 0.0:
+            Y.append([int(node_to_id[row[0]]), int(node_to_id[row[1]]), float(-(math.log2(float(row[2]))))])
+
+    X = Y
 
     weighted = True
     # if n == 2:
