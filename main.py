@@ -3,6 +3,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
+from sklearn.metrics import auc
 
 from utils import reader
 from pyrwr.ppr import PPR
@@ -12,19 +13,11 @@ G = nx.Graph()
 
 colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 
-data = "Wnt"
+datas = ["TNFalpha", "Wnt", "TGF_beta_Receptor"]
 
 input_graph = "data/interactome-weights.txt"
+# input_graph = "data/2015pathlinker-weighted.txt"
 graph_type = "directed"
-rtf_path = "data/NetPath/" + data + "-nodes.txt"
-pathway_path = "data/NetPath/" + data + "-edges.txt"
-
-if data == "Wnt":
-    pathlinker = "data/Wnt/test-files/Wnt-weighted-paths-pathlinker.txt"
-elif data == "TNFalpha":
-    pathlinker = "data/TNFalpha/test-files/TNFalpha-weighted-paths-pathlinker.txt"
-else:
-    pathlinker = "data/TGF_beta/test-files/TGF_beta-weighted-paths-pathlinker.txt"
 
 
 # This method computes the edge weights based on the given method
@@ -62,7 +55,7 @@ def compute_recall_precision(sorted_edges, known_pathway, recall_bound=1.0):
             fp += 1
         recalls.append(tp / len(known_pathway))
         precisions.append(tp / (tp + fp))
-        if recalls[-1] >= recall_bound:
+        if recalls[-1] > recall_bound:
             break
     return recalls, precisions
 
@@ -82,7 +75,7 @@ def run_random_walk(new_graph, c=0.15):
     return ppr.compute(seeds, c=c, max_iters=1000)
 
 
-def run_algorithm(method, color, alpha=0.0, c=0.15, k=300):
+def run_algorithm(method, color, alpha=0.0, c=0.15, k=300, recall_bound=1.0):
     new_graph = compute_new_graph(method, alpha)
     # creating the graph using the new weights
     adj_list = {}
@@ -101,13 +94,15 @@ def run_algorithm(method, color, alpha=0.0, c=0.15, k=300):
 
     # computing the precision and recall
     print("computing recall-precision curve for " + method)
-    recalls, precisions = compute_recall_precision(sorted_edges, subpathway)
+    recalls, precisions = compute_recall_precision(sorted_edges, subpathway, recall_bound)
 
     name = method
-    plt.plot(recalls, precisions, color=color, label=name)
+    plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
+
+    print("AUPRC of " + method + ": " + str(auc(recalls, precisions)))
 
     # computing the highest ranked edges
-    return [[sorted_edges[i][0][0], sorted_edges[i][0][1]] for i in range(max(k, len(sorted_edges)))]
+    return [[sorted_edges[i][0][0], sorted_edges[i][0][1]] for i in range(min(k, len(sorted_edges)))]
 
 
 def read_pathway(path):
@@ -153,42 +148,55 @@ def add_pathlinker(path, color, k=300):
     recalls, precisions = compute_recall_precision(edges, subpathway)
 
     name = "PathLinker"
-    plt.plot(recalls, precisions, color=color, label=name)
+    plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
+
+    print("AUPRC of pathlinker: " + str(auc(recalls, precisions)))
 
     # computing the highest ranked edges
-    return [[edges[i][0][0], edges[i][0][1]] for i in range(max(k, len(edges)))]
+    return [[edges[i][0][0], edges[i][0][1]] for i in range(max(k, len(edges)))], recalls[-1]
 
 
 # reading the graph
 _, nodes, graph = reader.read_graph(input_graph, graph_type)
-
-# reading seeds and targets
-seeds, targets = read_source_and_destinations(rtf_path)
-
-# reading pathway
-pathway = read_pathway(pathway_path)
-
-# removing the set of edges in the pathway that are not in the interactome
-subpathway = []
-for p in pathway:
-    for e in graph:
-        if e[0] == p[0] and e[1] == p[1]:
-            subpathway.append(p)
 
 # creating the networkx graph
 G.add_nodes_from(nodes)
 for e in graph:
     G.add_edge(int(e[1]), int(e[0]), weight=e[2])
 
-# finding the distances of each node from the targets
-length = nx.multi_source_dijkstra_path_length(G, targets)
-max_length = max(length.values())
+for data in datas:
+    rtf_path = "data/NetPath/" + data + "-nodes.txt"
+    pathway_path = "data/NetPath/" + data + "-edges.txt"
 
-pathway_ours = run_algorithm(method="ours", color=colors["deepskyblue"], alpha=5, c=0.25, k=300)
-pathway_rwr = run_algorithm(method="rwr", color=colors["silver"], k=300)
-pathway_pathlinker = add_pathlinker(pathlinker, color=colors["black"], k=300)
-plt.legend()
-plt.title("recall-precision for " + data)
+    if data == "Wnt":
+        pathlinker = "data/Wnt/test-files/Wnt-weighted-paths-pathlinker.txt"
+    elif data == "TNFalpha":
+        pathlinker = "data/TNFalpha/test-files/TNFalpha-weighted-paths-pathlinker.txt"
+    else:
+        pathlinker = "data/TGF_beta/test-files/TGF_beta-weighted-paths-pathlinker.txt"
 
-plt.savefig("results-" + data + ".png")
-plt.close()
+
+    # reading seeds and targets
+    seeds, targets = read_source_and_destinations(rtf_path)
+
+    # reading pathway
+    pathway = read_pathway(pathway_path)
+
+    # removing the set of edges in the pathway that are not in the interactome
+    subpathway = []
+    for p in pathway:
+        for e in graph:
+            if e[0] == p[0] and e[1] == p[1]:
+                subpathway.append(p)
+
+    # finding the distances of each node from the targets
+    length = nx.multi_source_dijkstra_path_length(G, targets)
+
+    pathway_pathlinker, last_recall = add_pathlinker(pathlinker, color=colors["black"], k=300)
+    pathway_ours = run_algorithm(method="ours", color=colors["deepskyblue"], alpha=5, c=0.25, k=300, recall_bound=last_recall)
+    pathway_rwr = run_algorithm(method="rwr", color=colors["silver"], k=300, recall_bound=last_recall)
+    plt.legend()
+    plt.title("recall-precision for " + data)
+
+    plt.savefig("results-" + data + "-halfway.png")
+    plt.close()
