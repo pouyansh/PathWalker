@@ -193,13 +193,6 @@ for data in datas:
     pathway_path = "data/NetPath/" + data + "-edges.txt"
     pathlinker = "data/PathLinker_output/" + data + "k-1000-ranked-edges.txt"
 
-    MYDIR = ("output/" + data)
-    CHECK_FOLDER = os.path.isdir(MYDIR)
-
-    # If folder doesn't exist, then create it.
-    if not CHECK_FOLDER:
-        os.makedirs(MYDIR)
-
     # reading seeds and targets
     seeds, targets = read_source_and_destinations(rtf_path)
 
@@ -219,10 +212,10 @@ for data in datas:
     length = nx.multi_source_dijkstra_path_length(G, targets)
 
     # running the algorithms and get the pathways, true positives, and false positives
-    pathway_pathlinker, last_recall, pl_tps, pl_fps = add_pathlinker(pathlinker, color=colors["black"], k=1100)
-    pathway_ours, our_tps, our_fps = run_algorithm(method="ours", color=colors["deepskyblue"], alpha=5, c=0.25, k=1100,
+    pathway_pathlinker, last_recall, pl_tps, pl_fps = add_pathlinker(pathlinker, color=colors["black"], k=1100000)
+    pathway_ours, our_tps, our_fps = run_algorithm(method="ours", color=colors["deepskyblue"], alpha=5, c=0.25, k=1100000,
                                                    recall_bound=last_recall)
-    pathway_rwr, rwr_tps, rwr_fps = run_algorithm(method="rwr", color=colors["silver"], k=1100,
+    pathway_rwr, rwr_tps, rwr_fps = run_algorithm(method="rwr", color=colors["silver"], k=1100000,
                                                   recall_bound=last_recall)
     overall_tps_ours.append(our_tps)
     overall_fps_ours.append(our_fps)
