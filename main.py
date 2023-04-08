@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
 from sklearn.metrics import auc
 
+from network_properties import plot_rtf_found, plot_node_auprc
 from utils import reader
 from pyrwr.ppr import PPR
 import networkx as nx
@@ -13,10 +14,11 @@ G = nx.Graph()
 
 colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 
-datas = ["TNFalpha", "Wnt", "TGF_beta_Receptor"]
+datas = ["Alpha6Beta4Integrin", "AndrogenReceptor", "BCR", "BDNF", "CRH", "EGFR1", "FSH", "Hedgehog", "IL1",
+         "IL2", "IL3", "IL4", "IL5", "IL6", "IL9", "IL-7", "IL-11", "KitReceptor", "Leptin", "Notch", "Oncostatin",
+         "Prolactin", "RANKL", "TCR", "TGF_beta_Receptor", "TNFalpha", "TSH", "TSLP", "TWEAK", "Wnt"]
 
 input_graph = "data/interactome-weights.txt"
-# input_graph = "data/2015pathlinker-weighted.txt"
 graph_type = "directed"
 
 
@@ -134,12 +136,11 @@ def read_pathlinker_output(path):
     with open(path, 'r') as f:
         for line in f:
             splitted = line.split()
-            sp = splitted[2].split('|')
-            for i in range(len(sp) - 1):
-                if sp[i] in nodes and sp[i + 1] in nodes:
-                    edge = [nodes[sp[i]], nodes[sp[i + 1]]]
-                    if edge not in edges:
-                        edges.append(edge)
+            sp = splitted[2].split()
+            if sp[0] != "#tail":
+                edge = [nodes[sp[1]], nodes[sp[0]]]
+                if edge not in edges:
+                    edges.append(edge)
     return [[edge] for edge in edges]
 
 
@@ -153,7 +154,7 @@ def add_pathlinker(path, color, k=300):
     print("AUPRC of pathlinker: " + str(auc(recalls, precisions)))
 
     # computing the highest ranked edges
-    return [[edges[i][0][0], edges[i][0][1]] for i in range(max(k, len(edges)))], recalls[-1]
+    return [[edges[i][0][0], edges[i][0][1]] for i in range(min(k, len(edges)))], recalls[-1]
 
 
 # reading the graph
@@ -167,14 +168,7 @@ for e in graph:
 for data in datas:
     rtf_path = "data/NetPath/" + data + "-nodes.txt"
     pathway_path = "data/NetPath/" + data + "-edges.txt"
-
-    if data == "Wnt":
-        pathlinker = "data/Wnt/test-files/Wnt-weighted-paths-pathlinker.txt"
-    elif data == "TNFalpha":
-        pathlinker = "data/TNFalpha/test-files/TNFalpha-weighted-paths-pathlinker.txt"
-    else:
-        pathlinker = "data/TGF_beta/test-files/TGF_beta-weighted-paths-pathlinker.txt"
-
+    pathlinker = "data/PathLinker_output/" + data + "-edges.txt"
 
     # reading seeds and targets
     seeds, targets = read_source_and_destinations(rtf_path)
@@ -192,11 +186,15 @@ for data in datas:
     # finding the distances of each node from the targets
     length = nx.multi_source_dijkstra_path_length(G, targets)
 
-    pathway_pathlinker, last_recall = add_pathlinker(pathlinker, color=colors["black"], k=300)
-    pathway_ours = run_algorithm(method="ours", color=colors["deepskyblue"], alpha=5, c=0.25, k=300, recall_bound=last_recall)
-    pathway_rwr = run_algorithm(method="rwr", color=colors["silver"], k=300, recall_bound=last_recall)
+    pathway_pathlinker, last_recall = add_pathlinker(pathlinker, color=colors["black"], k=2000)
+    pathway_ours = run_algorithm(method="ours", color=colors["deepskyblue"], alpha=5, c=0.25, k=2000,
+                                 recall_bound=last_recall)
+    pathway_rwr = run_algorithm(method="rwr", color=colors["silver"], k=2000, recall_bound=last_recall)
     plt.legend()
     plt.title("recall-precision for " + data)
 
-    plt.savefig("results-" + data + "-halfway.png")
+    plt.savefig(data + "PRC.png")
     plt.close()
+
+    plot_rtf_found(seeds, targets, pathway_ours, pathway_rwr, pathway_pathlinker, data)
+    plot_node_auprc(pathway, pathway_ours, pathway_rwr, pathway_pathlinker, data)
