@@ -31,7 +31,7 @@ def compute_rtf_found(edges, seeds, targets):
         else:
             targets_count.append(targets_count[-1])
 
-    return np.array(seeds_count)/len(seeds), np.array(targets_count)/len(targets)
+    return np.array(seeds_count) / len(seeds), np.array(targets_count) / len(targets)
 
 
 def plot_rtf_found(seeds, targets, our_edges, rwr_edges, pathlinker_edges, data):
@@ -44,7 +44,8 @@ def plot_rtf_found(seeds, targets, our_edges, rwr_edges, pathlinker_edges, data)
     plt.plot([i for i in range(len(our_seeds))], our_seeds, color=colors["deepskyblue"], label="ours")
     plt.plot([i for i in range(len(rwr_seeds))], rwr_seeds, color=colors["silver"], label="RWR")
     plt.legend()
-    plt.savefig(data + "receptors-" + str(len(our_edges)) + ".png")
+    # plt.savefig("output/" + data + "/receptors-" + str(len(our_edges)) + ".png")
+    plt.savefig("output/receptors/" + data + ".png")
     plt.close()
 
     plt.title("number of transcription factors found for " + data)
@@ -52,7 +53,8 @@ def plot_rtf_found(seeds, targets, our_edges, rwr_edges, pathlinker_edges, data)
     plt.plot([i for i in range(len(our_targets))], our_targets, color=colors["deepskyblue"], label="ours")
     plt.plot([i for i in range(len(rwr_targets))], rwr_targets, color=colors["silver"], label="RWR")
     plt.legend()
-    plt.savefig(data + "tf-" + str(len(our_edges)) + ".png")
+    # plt.savefig("output/" + data + "/tf-" + str(len(our_edges)) + ".png")
+    plt.savefig("output/tfs/" + data + ".png")
     plt.close()
 
 
@@ -60,14 +62,20 @@ def compute_node_auprc(edges, pathway_nodes):
     found_nodes = []
     recall = []
     precision = []
+    tps = []
+    fps = []
     tp = 0
     fp = 0
     for edge in edges:
         if edge[0] not in found_nodes:
             if edge[0] in pathway_nodes:
                 tp += 1
+                tps.append(1)
+                fps.append(0)
             else:
                 fp += 1
+                tps.append(0)
+                fps.append(1)
             found_nodes.append(edge[0])
         if edge[1] not in found_nodes:
             if edge[1] in pathway_nodes:
@@ -77,7 +85,7 @@ def compute_node_auprc(edges, pathway_nodes):
             found_nodes.append(edge[1])
         recall.append(tp / len(pathway_nodes))
         precision.append(tp / (tp + fp))
-    return recall, precision
+    return recall, precision, tps, fps
 
 
 def compute_pathway_nodes(pathway):
@@ -90,14 +98,7 @@ def compute_pathway_nodes(pathway):
     return nodes
 
 
-def plot_node_auprc(pathway, our_edges, rwr_edges, pathlinker_edges, data):
-    pathway_nodes = compute_pathway_nodes(pathway)
-
-    our_recall, our_precision = compute_node_auprc(our_edges, pathway_nodes)
-    rwr_recall, rwr_precision = compute_node_auprc(rwr_edges, pathway_nodes)
-    pl_recall, pl_precision = compute_node_auprc(pathlinker_edges, pathway_nodes)
-
-    plt.title("node precision recall for " + data)
+def plot_prc(our_recall, our_precision, rwr_recall, rwr_precision, pl_recall, pl_precision):
     plt.plot(pl_recall, pl_precision, color=colors["black"],
              label="PathLiner " + str(round(auc(pl_recall, pl_precision), 3)))
     plt.plot(our_recall, our_precision, color=colors["deepskyblue"],
@@ -105,5 +106,48 @@ def plot_node_auprc(pathway, our_edges, rwr_edges, pathlinker_edges, data):
     plt.plot(rwr_recall, rwr_precision, color=colors["silver"],
              label="RWR " + str(round(auc(rwr_recall, rwr_precision), 3)))
     plt.legend()
-    plt.savefig(data + "node-PRC-" + str(len(our_edges)) + ".png")
+
+
+def plot_node_auprc(pathway, our_edges, rwr_edges, pathlinker_edges, data):
+    pathway_nodes = compute_pathway_nodes(pathway)
+
+    our_recall, our_precision, our_tps, our_fps = compute_node_auprc(our_edges, pathway_nodes)
+    rwr_recall, rwr_precision, rwr_tps, rwr_fps = compute_node_auprc(rwr_edges, pathway_nodes)
+    pl_recall, pl_precision, pl_tps, pl_fps = compute_node_auprc(pathlinker_edges, pathway_nodes)
+
+    plt.title("node precision recall for " + data)
+    plot_prc(our_recall, our_precision, rwr_recall, rwr_precision, pl_recall, pl_precision)
+    # plt.savefig("output/" + data + "/node-PRC-" + str(len(our_edges)) + ".png")
+    plt.savefig("output/node-PRC/" + data + ".png")
+    plt.close()
+
+    return our_tps, our_fps, rwr_tps, rwr_fps, pl_tps, pl_fps, len(pathway_nodes)
+
+
+def compute_overall_recall_precision(tps, fps, total_length):
+    recalls = []
+    precisions = []
+    tp = 0
+    fp = 0
+    for i in range(max([len(t) for t in tps])):
+        for k in range(len(tps)):
+            if len(tps[k]) > i:
+                tp += tps[k][i]
+                fp += fps[k][i]
+        recalls.append(tp / total_length)
+        precisions.append(tp / (tp + fp))
+    return recalls, precisions
+
+
+def plot_total_prc(overall_tps_ours, overall_fps_ours, overall_tps_rwr, overall_fps_rwr, overall_tps_pl,
+                   overall_fps_pl, total_length_pathways, name):
+    recalls_ours, precisions_ours = compute_overall_recall_precision(overall_tps_ours, overall_fps_ours,
+                                                                     total_length_pathways)
+    recalls_pl, precisions_pl = compute_overall_recall_precision(overall_tps_pl, overall_fps_pl,
+                                                                 total_length_pathways)
+    recalls_rwr, precisions_rwr = compute_overall_recall_precision(overall_tps_rwr, overall_fps_rwr,
+                                                                   total_length_pathways)
+    plt.title(name)
+    plot_prc(recalls_ours, precisions_ours, recalls_pl, precisions_pl, recalls_rwr, precisions_rwr)
+    plt.savefig("output/" + name + ".png")
     plt.close()
