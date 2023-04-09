@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
 from sklearn.metrics import auc
 
+from file_methods import write_edges, write_precision_recall
 from network_properties import plot_rtf_found, plot_node_auprc, plot_total_prc
 from utils import reader
 from pyrwr.ppr import PPR
@@ -18,7 +19,6 @@ colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 datas = ["Alpha6Beta4Integrin", "AndrogenReceptor", "BCR", "BDNF", "CRH", "EGFR1", "FSH", "Hedgehog", "IL1",
          "IL2", "IL3", "IL4", "IL5", "IL6", "IL9", "IL-7", "KitReceptor", "Leptin", "Notch", "Oncostatin_M",
          "Prolactin", "RANKL", "TCR", "TGF_beta_Receptor", "TNFalpha", "TSH", "TSLP", "TWEAK", "Wnt"]
-# datas = ["TSLP", "TWEAK", "Wnt"]
 
 input_graph = "data/interactome-weights.txt"
 graph_type = "directed"
@@ -61,14 +61,15 @@ def compute_new_graph(method, alpha=0.0):
         return np.array([[int(edge[0]), int(edge[1]), math.pow(2, -float(edge[2]))] for edge in graph])
 
 
-def compute_recall_precision(sorted_edges, known_pathway, recall_bound=1.0):
+def compute_recall_precision(sorted_edges, known_pathway, k, recall_bound=1.0):
     recalls = []
     precisions = []
     tps = []
     fps = []
     tp = 0
     fp = 0
-    for edge in sorted_edges:
+    for i in range(min(k, len(sorted_edges))):
+        edge = sorted_edges[i]
         if [edge[0][0], edge[0][1]] in known_pathway:
             tp += 1
             tps.append(1)
@@ -99,7 +100,7 @@ def run_random_walk(new_graph, c=0.15):
     return ppr.compute(seeds, c=c, max_iters=1000)
 
 
-def run_algorithm(method, color, alpha=0.0, c=0.15, k=300, recall_bound=1.0):
+def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_bound=1.0):
     new_graph = compute_new_graph(method, alpha)
     # creating the graph using the new weights
     adj_list = {}
@@ -115,10 +116,13 @@ def run_algorithm(method, color, alpha=0.0, c=0.15, k=300, recall_bound=1.0):
     # computing the edge probabilities
     print("computing the edge probabilities for " + method)
     sorted_edges = compute_edge_probs(adj_list, r)
+    result = [[sorted_edges[i][0][0], sorted_edges[i][0][1]] for i in range(min(k, len(sorted_edges)))]
+    write_edges(result, "results/" + dataset + "edges-" + method + ".txt")
 
     # computing the precision and recall
     print("computing recall-precision curve for " + method)
-    recalls, precisions, tps, fps = compute_recall_precision(sorted_edges, subpathway, recall_bound)
+    recalls, precisions, tps, fps = compute_recall_precision(sorted_edges, subpathway, k, recall_bound)
+    write_precision_recall(precisions, recalls, "results/" + dataset + "PR-" + method + ".txt")
 
     name = method
     plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
@@ -126,7 +130,7 @@ def run_algorithm(method, color, alpha=0.0, c=0.15, k=300, recall_bound=1.0):
     print("AUPRC of " + method + ": " + str(auc(recalls, precisions)))
 
     # computing the highest ranked edges
-    return [[sorted_edges[i][0][0], sorted_edges[i][0][1]] for i in range(min(k, len(sorted_edges)))], tps, fps
+    return result, tps, fps
 
 
 def read_pathway(path):
@@ -165,9 +169,9 @@ def read_pathlinker_output(path):
     return [[edge] for edge in edges]
 
 
-def add_pathlinker(path, color, k=300):
+def add_pathlinker(path, color, k=1000000):
     edges = read_pathlinker_output(path)
-    recalls, precisions, tps, fps = compute_recall_precision(edges, subpathway)
+    recalls, precisions, tps, fps = compute_recall_precision(edges, subpathway, k)
 
     name = "PathLinker"
     plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
@@ -175,7 +179,7 @@ def add_pathlinker(path, color, k=300):
     print("AUPRC of pathlinker: " + str(auc(recalls, precisions)))
 
     # computing the highest ranked edges
-    return [[edges[i][0][0], edges[i][0][1]] for i in range(min(k, len(edges)))], recalls[-1], tps, fps
+    return [[edges[i][0][0], edges[i][0][1]] for i in range(min(k, len(edges)))], len(edges), tps, fps
 
 
 # reading the graph
@@ -191,7 +195,7 @@ total_pathway_node_lengths = 0
 for data in datas:
     rtf_path = "data/NetPath/" + data + "-nodes.txt"
     pathway_path = "data/NetPath/" + data + "-edges.txt"
-    pathlinker = "data/PathLinker_output/" + data + "k-1000-ranked-edges.txt"
+    pathlinker = "data/PathLinker_output/" + data + "k-2000-ranked-edges.txt"
 
     # reading seeds and targets
     seeds, targets = read_source_and_destinations(rtf_path)
@@ -212,11 +216,10 @@ for data in datas:
     length = nx.multi_source_dijkstra_path_length(G, targets)
 
     # running the algorithms and get the pathways, true positives, and false positives
-    pathway_pathlinker, last_recall, pl_tps, pl_fps = add_pathlinker(pathlinker, color=colors["black"], k=1100000)
-    pathway_ours, our_tps, our_fps = run_algorithm(method="ours", color=colors["deepskyblue"], alpha=5, c=0.25, k=1100000,
-                                                   recall_bound=last_recall)
-    pathway_rwr, rwr_tps, rwr_fps = run_algorithm(method="rwr", color=colors["silver"], k=1100000,
-                                                  recall_bound=last_recall)
+    pathway_pathlinker, pl_edge_len, pl_tps, pl_fps = add_pathlinker(pathlinker, color=colors["black"])
+    pathway_ours, our_tps, our_fps = run_algorithm(dataset=data, method="ours", color=colors["deepskyblue"], alpha=5,
+                                                   c=0.25, k=pl_edge_len)
+    pathway_rwr, rwr_tps, rwr_fps = run_algorithm(dataset=data, method="rwr", color=colors["silver"], k=pl_edge_len)
     overall_tps_ours.append(our_tps)
     overall_fps_ours.append(our_fps)
     overall_tps_pl.append(pl_tps)
