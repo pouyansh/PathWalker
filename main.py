@@ -205,11 +205,11 @@ for data in datas:
 
     # running the algorithms and get the pathways, true positives, and false positives
     pathway_pathlinker, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=colors["black"],
-                                                                                direction=False)
+                                                                                direction=True)
     pathway_ours, our_recalls, our_precisions = run_algorithm(dataset=data, method="ours", color=colors["deepskyblue"],
-                                                              alpha=5, c=0.25, k=pl_edge_len, direction=False)
+                                                              alpha=5, c=0.25, k=pl_edge_len, direction=True)
     pathway_rwr, rwr_recalls, rwr_precisions = run_algorithm(dataset=data, method="rwr", color=colors["silver"],
-                                                             k=pl_edge_len, direction=False)
+                                                             k=pl_edge_len, direction=True)
     overall_recalls_ours.append(our_recalls)
     overall_precisions_ours.append(our_precisions)
     overall_recalls_pl.append(pl_recalls)

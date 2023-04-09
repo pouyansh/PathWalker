@@ -1,13 +1,22 @@
 import networkx as nx
+from matplotlib import pyplot as plt
+from networkx.algorithms import approximation as approx
+from matplotlib import colors as mcolors
 
 from file_methods import read_source_and_destinations, read_nodes
+
+colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 
 datas = ["Alpha6Beta4Integrin", "AndrogenReceptor", "BCR", "BDNF", "CRH", "EGFR1", "FSH", "Hedgehog", "IL1",
          "IL2", "IL3", "IL4", "IL5", "IL6", "IL9", "IL-7", "KitReceptor", "Leptin", "Notch", "Oncostatin_M",
          "Prolactin", "RANKL", "TCR", "TGF_beta_Receptor", "TNFalpha", "TSH", "TSLP", "TWEAK", "Wnt"]
 
 # defining the bounds for which we want to compute the connectivity
-bounds = [10000, 25000, 50000]
+bounds = [5000, 10000, 25000, 50000]
+pallet = [colors['greenyellow'], colors['lime'], colors['forestgreen'], colors['darkgreen']]
+
+total_paths = [[] for _ in range(len(bounds))]
+connected_pairs = [[] for _ in range(len(bounds))]
 
 for data in datas:
     our_pathway = "results/" + data + "edges-ours.txt"
@@ -27,11 +36,38 @@ for data in datas:
             sp = line.split()
             edges.append([sp[0], sp[1]])
 
+    total_paths_data = [0 for _ in range(len(bounds))]
+    connected_pairs_data = [0 for _ in range(len(bounds))]
     for i, bound in bounds:
         for j in range(bound):
             G[i].add_edge(edges[i][0], edges[i][1])
 
+        for seed in seeds:
+            for target in targets:
+                path_num = approx.local_node_connectivity(G, seed, target)
+                if path_num > 0:
+                    connected_pairs_data[i] += 1
+                total_paths_data[i] += path_num
 
+        total_paths_data[i] /= len(seeds) * len(targets)
+        connected_pairs_data[i] /= len(seeds) * len(targets)
 
+    for i in range(len(bounds)):
+        total_paths[i].append(total_paths_data[i])
+        connected_pairs[i].append(connected_pairs_data[i])
 
+for i in range(len(bounds)):
+    plt.plot([j for j in range(len(datas))], total_paths[i], label="top " + str(bounds[i]) + " edges")
+plt.xticks([j for j in range(len(datas))], datas)
+plt.title("average number of paths from receptors to transcription factors")
+plt.legend()
+plt.savefig("output/path_num.png")
+plt.close()
 
+for i in range(len(bounds)):
+    plt.plot([j for j in range(len(datas))], connected_pairs[i], label="top " + str(bounds[i]) + " edges")
+plt.xticks([j for j in range(len(datas))], datas)
+plt.title("percentage of receptors and transcription factors connected to each other")
+plt.legend()
+plt.savefig("output/connectivity.png")
+plt.close()
