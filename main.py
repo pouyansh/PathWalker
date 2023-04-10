@@ -116,12 +116,12 @@ def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_b
     print("computing the edge probabilities for " + method)
     sorted_edges = compute_edge_probs(adj_list, r)
     result = [[sorted_edges[i][0][0], sorted_edges[i][0][1]] for i in range(min(k, len(sorted_edges)))]
-    # write_edges(result, "results/" + dataset + "edges-" + method + ".txt")
+    write_edges(result, "results/" + dataset + "edges-" + method + ".txt")
 
     # computing the precision and recall
     print("computing recall-precision curve for " + method)
     recalls, precisions, tps, fps = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound)
-    # write_precision_recall(precisions, recalls, "results/" + dataset + "PR-" + method + ".txt")
+    write_precision_recall(precisions, recalls, "results/" + dataset + "PR-" + method + ".txt")
 
     name = method
     plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
@@ -207,9 +207,9 @@ for data in datas:
     pathway_pathlinker, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=colors["black"],
                                                                                 direction=True)
     pathway_ours, our_recalls, our_precisions = run_algorithm(dataset=data, method="ours", color=colors["deepskyblue"],
-                                                              alpha=5, c=0.25, k=pl_edge_len, direction=True)
+                                                              alpha=5, c=0.25, k=50000, direction=True)
     pathway_rwr, rwr_recalls, rwr_precisions = run_algorithm(dataset=data, method="rwr", color=colors["silver"],
-                                                             k=pl_edge_len, direction=True)
+                                                             k=50000, direction=True)
     overall_recalls_ours.append(our_recalls)
     overall_precisions_ours.append(our_precisions)
     overall_recalls_pl.append(pl_recalls)

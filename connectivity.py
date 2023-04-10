@@ -1,6 +1,5 @@
 import networkx as nx
 from matplotlib import pyplot as plt
-from networkx.algorithms import approximation as approx
 from matplotlib import colors as mcolors
 
 from file_methods import read_source_and_destinations, read_nodes
@@ -12,10 +11,10 @@ datas = ["Alpha6Beta4Integrin", "AndrogenReceptor", "BCR", "BDNF", "CRH", "EGFR1
          "Prolactin", "RANKL", "TCR", "TGF_beta_Receptor", "TNFalpha", "TSH", "TSLP", "TWEAK", "Wnt"]
 
 # defining the bounds for which we want to compute the connectivity
-bounds = [5000, 10000, 25000, 50000]
-pallet = [colors['greenyellow'], colors['lime'], colors['forestgreen'], colors['darkgreen']]
+bounds = [100 * (i+1) for i in range(20)]
+pallet = [colors['dodgerblue'], colors['forestgreen'], colors['limegreen'], colors['springgreen'], colors['turquoise'],
+          colors['deepskyblue'], colors['dodgerblue'], colors['blue']]
 
-total_paths = [[] for _ in range(len(bounds))]
 connected_pairs = [[] for _ in range(len(bounds))]
 
 for data in datas:
@@ -34,40 +33,29 @@ for data in datas:
     with open(our_pathway, 'r') as f:
         for line in f:
             sp = line.split()
-            edges.append([sp[0], sp[1]])
+            edges.append([int(sp[0]), int(sp[1])])
 
-    total_paths_data = [0 for _ in range(len(bounds))]
     connected_pairs_data = [0 for _ in range(len(bounds))]
-    for i, bound in bounds:
-        for j in range(bound):
-            G[i].add_edge(edges[i][0], edges[i][1])
+    for i in range(len(bounds)):
+        for j in range(bounds[i]):
+            G[i].add_edge(edges[j][0], edges[j][1])
 
         for seed in seeds:
-            for target in targets:
-                path_num = approx.local_node_connectivity(G, seed, target)
-                if path_num > 0:
-                    connected_pairs_data[i] += 1
-                total_paths_data[i] += path_num
+            if G[i].has_node(seed):
+                descendants = nx.algorithms.descendants(G[i], seed)
+                for target in targets:
+                    if target in descendants:
+                        connected_pairs_data[i] += 1
 
-        total_paths_data[i] /= len(seeds) * len(targets)
         connected_pairs_data[i] /= len(seeds) * len(targets)
 
     for i in range(len(bounds)):
-        total_paths[i].append(total_paths_data[i])
         connected_pairs[i].append(connected_pairs_data[i])
+    print(connected_pairs_data)
 
-for i in range(len(bounds)):
-    plt.plot([j for j in range(len(datas))], total_paths[i], label="top " + str(bounds[i]) + " edges")
-plt.xticks([j for j in range(len(datas))], datas)
-plt.title("average number of paths from receptors to transcription factors")
-plt.legend()
-plt.savefig("output/path_num.png")
-plt.close()
-
-for i in range(len(bounds)):
-    plt.plot([j for j in range(len(datas))], connected_pairs[i], label="top " + str(bounds[i]) + " edges")
-plt.xticks([j for j in range(len(datas))], datas)
+plt.plot(bounds, [sum(connected_pairs[i]) / len(datas) for i in range(len(bounds))], color=pallet[0])
+# plt.xticks([j for j in range(len(datas))], datas, rotation=90)
+plt.ylim(bottom=0)
 plt.title("percentage of receptors and transcription factors connected to each other")
-plt.legend()
-plt.savefig("output/connectivity.png")
+plt.savefig("output/connectivity_low.png")
 plt.close()
