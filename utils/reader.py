@@ -83,14 +83,17 @@ def read_graph(path, graph_type):
                 X.append([splitted[0], splitted[1], float(splitted[2])])
 
     node_to_id = {}
+    id_to_node = []
     counter = 0
     Y = []
     for row in X:
         if row[0] not in node_to_id:
             node_to_id[row[0]] = counter
+            id_to_node.append(row[0])
             counter += 1
         if row[1] not in node_to_id:
             node_to_id[row[1]] = counter
+            id_to_node.append(row[1])
             counter += 1
         if float(row[2]) > 0.0:
             Y.append([int(node_to_id[row[0]]), int(node_to_id[row[1]]), float(-(math.log2(float(row[2]))))])
@@ -128,4 +131,4 @@ def read_graph(path, graph_type):
     else:
         raise ValueError('graph_type sould be directed, undirected, or bipartite')
 
-    return A, node_to_id, X
+    return A, node_to_id, X, id_to_node

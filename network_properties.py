@@ -6,12 +6,13 @@ from sklearn.metrics import auc
 colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 
 
-def compute_rtf_found(edges, seeds, targets):
+def compute_rtf_found(edges, seeds, targets, k=1000000):
     found_seeds = []
     found_targets = []
     seeds_count = [0]
     targets_count = [0]
-    for edge in edges:
+    for i in range(min(len(edges), k)):
+        edge = edges[i]
         if edge[0] in seeds and edge[0] not in found_seeds:
             found_seeds.append(edge[0])
             seeds_count.append(seeds_count[-1] + 1)
@@ -34,16 +35,15 @@ def compute_rtf_found(edges, seeds, targets):
 
 
 def plot_rtf_found(seeds, targets, our_edges, rwr_edges, pathlinker_edges, data):
-    our_seeds, our_targets = compute_rtf_found(our_edges, seeds, targets)
-    rwr_seeds, rwr_targets = compute_rtf_found(rwr_edges, seeds, targets)
-    pl_seeds, pl_targets = compute_rtf_found(pathlinker_edges, seeds, targets)
+    our_seeds, our_targets = compute_rtf_found(our_edges, seeds, targets, k=len(pathlinker_edges))
+    rwr_seeds, rwr_targets = compute_rtf_found(rwr_edges, seeds, targets, k=len(pathlinker_edges))
+    pl_seeds, pl_targets = compute_rtf_found(pathlinker_edges, seeds, targets, k=len(pathlinker_edges))
 
     plt.title("number of receptors found for " + data)
     plt.plot([i for i in range(len(pl_seeds))], pl_seeds, color=colors["black"], label="PathLinker")
     plt.plot([i for i in range(len(our_seeds))], our_seeds, color=colors["deepskyblue"], label="ours")
     plt.plot([i for i in range(len(rwr_seeds))], rwr_seeds, color=colors["silver"], label="RWR")
     plt.legend()
-    # plt.savefig("output/" + data + "/receptors-" + str(len(our_edges)) + ".png")
     plt.savefig("output/receptors/" + data + ".png")
     plt.close()
 
@@ -52,7 +52,6 @@ def plot_rtf_found(seeds, targets, our_edges, rwr_edges, pathlinker_edges, data)
     plt.plot([i for i in range(len(our_targets))], our_targets, color=colors["deepskyblue"], label="ours")
     plt.plot([i for i in range(len(rwr_targets))], rwr_targets, color=colors["silver"], label="RWR")
     plt.legend()
-    # plt.savefig("output/" + data + "/tf-" + str(len(our_edges)) + ".png")
     plt.savefig("output/tfs/" + data + ".png")
     plt.close()
 

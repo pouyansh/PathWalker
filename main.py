@@ -28,9 +28,13 @@ These are some boolean variables that define what do we expect from the code
 '''
 HAS_CLEANED_PATHWAY = True
 RUN_ALGORITHMS = False
+# output
+PLOT_EDGES_PRC = False
+PLOT_NODES_PRC = False
+COMPUTE_RTF = True
+# writing methods
 WRITE_EDGES = False
 WRITE_PRC = False
-COMPUTE_RTF = True
 WRITE_NODES_TO_ID_MAP = False
 
 overall_recalls_ours = []
@@ -135,16 +139,20 @@ def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_b
         result = read_edges("results/" + dataset + "edges-" + method + ".txt")
         sorted_edges = [[[r[0], r[1]], 0] for r in result]
 
-    # computing the precision and recall
-    print("computing recall-precision curve for " + method)
-    recalls, precisions, tps, fps = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound)
-    if WRITE_PRC:
-        write_precision_recall(precisions, recalls, "results/" + dataset + "PR-" + method + ".txt")
+    recalls = []
+    precisions = []
 
-    name = method
-    plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
+    if PLOT_EDGES_PRC:
+        # computing the precision and recall
+        print("computing recall-precision curve for " + method)
+        recalls, precisions, tps, fps = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound)
+        if WRITE_PRC:
+            write_precision_recall(precisions, recalls, "results/" + dataset + "PR-" + method + ".txt")
 
-    print("AUPRC of " + method + ": " + str(auc(recalls, precisions)))
+        name = method
+        plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
+
+        print("AUPRC of " + method + ": " + str(auc(recalls, precisions)))
 
     return result, recalls, precisions
 
@@ -244,7 +252,7 @@ for data in datas:
     # finding the distances of each node from the targets
     if RUN_ALGORITHMS:
         length = nx.multi_source_dijkstra_path_length(G, targets)
-        forward_length = nx.multi_source_dijkstra_path_length(G, seeds)
+        forward_length = nx.multi_source_dijkstra_path_length(forward_G, seeds)
 
     # running the algorithms and get the pathways, true positives, and false positives
     pathway_pathlinker, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=colors["black"],
@@ -253,17 +261,18 @@ for data in datas:
                                                               alpha=5, c=0.25, k=pl_edge_len, direction=False)
     pathway_rwr, rwr_recalls, rwr_precisions = run_algorithm(dataset=data, method="rwr", color=colors["silver"],
                                                              k=pl_edge_len, direction=False)
-    overall_recalls_ours.append(our_recalls)
-    overall_precisions_ours.append(our_precisions)
-    overall_recalls_pl.append(pl_recalls)
-    overall_precisions_pl.append(pl_precisions)
-    overall_recalls_rwr.append(rwr_recalls)
-    overall_precisions_rwr.append(rwr_precisions)
+    if PLOT_EDGES_PRC:
+        overall_recalls_ours.append(our_recalls)
+        overall_precisions_ours.append(our_precisions)
+        overall_recalls_pl.append(pl_recalls)
+        overall_precisions_pl.append(pl_precisions)
+        overall_recalls_rwr.append(rwr_recalls)
+        overall_precisions_rwr.append(rwr_precisions)
 
-    plt.legend()
-    plt.title("recall-precision for " + data)
-    plt.savefig("output/edge-PRC/" + data + ".png")
-    plt.close()
+        plt.legend()
+        plt.title("recall-precision for " + data)
+        plt.savefig("output/edge-PRC/" + data + ".png")
+        plt.close()
 
     if COMPUTE_RTF:
         our_seeds, our_targets, rwr_seeds, rwr_targets, pl_seeds, pl_targets = plot_rtf_found(seeds, targets,
@@ -277,21 +286,24 @@ for data in datas:
         overall_tf_rwr.append(rwr_targets)
 
     # Node AUPRC
-    our_recalls, our_precisions, rwr_recalls, rwr_precisions, pl_recalls, pl_precisions, node_len = plot_node_auprc(
-        subpathway, pathway_ours, pathway_rwr, pathway_pathlinker, data)
-    overall_node_recalls_ours.append(our_recalls)
-    overall_node_precisions_ours.append(our_precisions)
-    overall_node_recalls_pl.append(pl_recalls)
-    overall_node_precisions_pl.append(pl_precisions)
-    overall_node_recalls_rwr.append(rwr_recalls)
-    overall_node_precisions_rwr.append(rwr_precisions)
-    total_pathway_node_lengths += node_len
+    if PLOT_NODES_PRC:
+        our_recalls, our_precisions, rwr_recalls, rwr_precisions, pl_recalls, pl_precisions, node_len = plot_node_auprc(
+            subpathway, pathway_ours, pathway_rwr, pathway_pathlinker, data)
+        overall_node_recalls_ours.append(our_recalls)
+        overall_node_precisions_ours.append(our_precisions)
+        overall_node_recalls_pl.append(pl_recalls)
+        overall_node_precisions_pl.append(pl_precisions)
+        overall_node_recalls_rwr.append(rwr_recalls)
+        overall_node_precisions_rwr.append(rwr_precisions)
+        total_pathway_node_lengths += node_len
 
-plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
-               overall_recalls_pl, overall_precisions_pl, "overall-edge-PRC")
+if PLOT_EDGES_PRC:
+    plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
+                   overall_recalls_pl, overall_precisions_pl, "overall-edge-PRC")
 
-plot_total_prc(overall_node_recalls_ours, overall_node_precisions_ours, overall_node_recalls_rwr,
-               overall_node_precisions_rwr, overall_node_recalls_pl, overall_node_precisions_pl, "overall-node-PRC")
+if PLOT_NODES_PRC:
+    plot_total_prc(overall_node_recalls_ours, overall_node_precisions_ours, overall_node_recalls_rwr,
+                   overall_node_precisions_rwr, overall_node_recalls_pl, overall_node_precisions_pl, "overall-node-PRC")
 
 if COMPUTE_RTF:
     plot_total_prc([[(i + 1) for i in range(len(r_ours))] for r_ours in overall_r_ours], overall_r_ours,
