@@ -1,4 +1,3 @@
-import networkx as nx
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors as mcolors
@@ -56,6 +55,8 @@ def plot_rtf_found(seeds, targets, our_edges, rwr_edges, pathlinker_edges, data)
     # plt.savefig("output/" + data + "/tf-" + str(len(our_edges)) + ".png")
     plt.savefig("output/tfs/" + data + ".png")
     plt.close()
+
+    return our_seeds, our_targets, rwr_seeds, rwr_targets, pl_seeds, pl_targets
 
 
 def compute_node_auprc(edges, pathway_nodes):
@@ -117,7 +118,7 @@ def plot_node_auprc(pathway, our_edges, rwr_edges, pl_edges, data):
     return our_recall, our_precision, rwr_recall, rwr_precision, pl_recall, pl_precision, len(pathway_nodes)
 
 
-def compute_overall_recall_precision(recalls, precisions, total_length):
+def compute_overall_recall_precision(recalls, precisions):
     recall = []
     precision = []
     for i in range(max([len(t) for t in recalls])):
@@ -137,13 +138,10 @@ def compute_overall_recall_precision(recalls, precisions, total_length):
 
 
 def plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
-                   overall_recalls_pl, overall_precisions_pl, total_length_pathways, name):
-    recalls_ours, precisions_ours = compute_overall_recall_precision(overall_recalls_ours, overall_precisions_ours,
-                                                                     total_length_pathways)
-    recalls_pl, precisions_pl = compute_overall_recall_precision(overall_recalls_pl, overall_precisions_pl,
-                                                                 total_length_pathways)
-    recalls_rwr, precisions_rwr = compute_overall_recall_precision(overall_recalls_rwr, overall_precisions_rwr,
-                                                                   total_length_pathways)
+                   overall_recalls_pl, overall_precisions_pl, name):
+    recalls_ours, precisions_ours = compute_overall_recall_precision(overall_recalls_ours, overall_precisions_ours)
+    recalls_pl, precisions_pl = compute_overall_recall_precision(overall_recalls_pl, overall_precisions_pl)
+    recalls_rwr, precisions_rwr = compute_overall_recall_precision(overall_recalls_rwr, overall_precisions_rwr)
     plt.title(name)
     plot_prc(recalls_ours, precisions_ours, recalls_rwr, precisions_rwr, recalls_pl, precisions_pl)
     plt.savefig("output/" + name + ".png")
