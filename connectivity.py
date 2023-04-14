@@ -9,7 +9,6 @@ colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 datas = ["Alpha6Beta4Integrin", "AndrogenReceptor", "BCR", "BDNF", "CRH", "EGFR1", "FSH", "Hedgehog", "IL1",
          "IL2", "IL3", "IL4", "IL5", "IL6", "IL9", "IL-7", "KitReceptor", "Leptin", "Notch", "Oncostatin_M",
          "Prolactin", "RANKL", "TCR", "TGF_beta_Receptor", "TNFalpha", "TSH", "TSLP", "TWEAK", "Wnt"]
-# datas = ["TGF_beta_Receptor", "TNFalpha", "Wnt"]
 
 # defining the bounds for which we want to compute the connectivity
 bounds = [100 * (i + 1) for i in range(25)]

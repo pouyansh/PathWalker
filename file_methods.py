@@ -9,7 +9,7 @@ def read_edges(filename):
     with open(filename, 'r') as f:
         for row in f:
             sp = row.split()
-            edges.append([int(sp[0]), int(sp[1])])
+            edges.append([int(float(sp[0])), int(float(sp[1]))])
     return edges
 
 

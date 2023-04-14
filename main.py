@@ -20,6 +20,9 @@ datas = ["Alpha6Beta4Integrin", "AndrogenReceptor", "BCR", "BDNF", "CRH", "EGFR1
          "IL2", "IL3", "IL4", "IL5", "IL6", "IL9", "IL-7", "KitReceptor", "Leptin", "Notch", "Oncostatin_M",
          "Prolactin", "RANKL", "TCR", "TGF_beta_Receptor", "TNFalpha", "TSH", "TSLP", "TWEAK", "Wnt"]
 
+pallet = [colors['black'], colors['orangered'], colors['grey'], colors['lightgray']]
+# pallet = [colors['navy'], colors['orangered'], colors['dodgerblue'], colors['lightsteelblue']]
+
 input_graph = "data/interactome-weights.txt"
 graph_type = "directed"
 
@@ -28,12 +31,14 @@ These are some boolean variables that define what do we expect from the code
 '''
 HAS_CLEANED_PATHWAY = True
 RUN_ALGORITHMS = False
+RUN_EDGE_LINKER = False
 # output
-PLOT_EDGES_PRC = False
-PLOT_NODES_PRC = False
+PLOT_EDGES_PRC = True
+PLOT_NODES_PRC = True
 COMPUTE_RTF = True
 # writing methods
 WRITE_EDGES = False
+WRITE_EDGES_EDGE_LINKER = False
 WRITE_PRC = False
 WRITE_NODES_TO_ID_MAP = False
 
@@ -43,6 +48,8 @@ overall_recalls_pl = []
 overall_precisions_pl = []
 overall_recalls_rwr = []
 overall_precisions_rwr = []
+overall_recalls_el = []
+overall_precisions_el = []
 
 overall_node_recalls_ours = []
 overall_node_precisions_ours = []
@@ -50,6 +57,8 @@ overall_node_recalls_pl = []
 overall_node_precisions_pl = []
 overall_node_recalls_rwr = []
 overall_node_precisions_rwr = []
+overall_node_recalls_el = []
+overall_node_precisions_el = []
 
 overall_r_ours = []
 overall_tf_ours = []
@@ -57,14 +66,16 @@ overall_r_pl = []
 overall_tf_pl = []
 overall_r_rwr = []
 overall_tf_rwr = []
+overall_r_el = []
+overall_tf_el = []
 
 
 # This method computes the edge weights based on the given method
 def compute_new_graph(method, alpha=0.0):
-    if method == "edgeLinker":
+    if method == "edge_linker":
         return np.array(
-            [[int(edge[0]), int(edge[1]), math.pow(2, -alpha * float(edge[2] + length[edge[1]]))] for edge in
-             graph])
+            [[int(edge[0]), int(edge[1]), math.pow(2, -float(edge[2] + length[edge[1]] + forward_length[edge[0]]))] for
+             edge in graph])
     if method == "m2":
         return np.array(
             [[int(edge[0]), int(edge[1]), math.pow(2, -alpha * float(length[edge[1]]))] for edge in graph])
@@ -192,6 +203,38 @@ def add_pathlinker(path, color, k=1000000, direction=True):
     return [[edges[i][0][0], edges[i][0][1]] for i in range(min(k, len(edges)))], len(edges), recalls, precisions
 
 
+def run_edge_linker(dataset, color, k=1000000, recall_bound=1.0, direction=True):
+    if RUN_EDGE_LINKER:
+        new_graph = compute_new_graph("edge_linker")
+
+        # computing the edge probabilities
+        print("computing the edges for edge_linker")
+        edges_probs = [[[edge[0], edge[1]], edge[2]] for edge in new_graph]
+        sorted_edges = sorted(edges_probs, key=lambda x: -x[1])
+        result = [[sorted_edges[i][0][0], sorted_edges[i][0][1]] for i in range(min(k, len(sorted_edges)))]
+        if WRITE_EDGES_EDGE_LINKER:
+            write_edges(result, "results/" + dataset + "edges-el.txt")
+    else:
+        result = read_edges("results/" + dataset + "edges-el.txt")
+        sorted_edges = [[[r[0], r[1]], 0] for r in result]
+
+    recalls = []
+    precisions = []
+
+    if PLOT_EDGES_PRC:
+        # computing the precision and recall
+        print("computing recall-precision curve for edge_linker")
+        recalls, precisions, tps, fps = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound)
+        if WRITE_PRC:
+            write_precision_recall(precisions, recalls, "results/" + dataset + "PR-el.txt")
+
+        plt.plot(recalls, precisions, color=color, label="edgeLinker " + str(round(auc(recalls, precisions), 4)))
+
+        print("AUPRC of edge_linker: " + str(auc(recalls, precisions)))
+
+    return result, recalls, precisions
+
+
 def clean_pathway(path, dataset):
     subpath = []
     for p in path:
@@ -220,7 +263,7 @@ if WRITE_NODES_TO_ID_MAP:
     write_nodes("data/nodes_map.txt", nodes)
 
 # creating the networkx graph
-if RUN_ALGORITHMS:
+if RUN_ALGORITHMS or RUN_EDGE_LINKER:
     G.add_nodes_from(nodes)
     for e in graph:
         G.add_edge(int(e[1]), int(e[0]), weight=e[2])
@@ -250,17 +293,19 @@ for data in datas:
     total_pathway_lengths += len(subpathway)
 
     # finding the distances of each node from the targets
-    if RUN_ALGORITHMS:
+    if RUN_ALGORITHMS or RUN_EDGE_LINKER:
         length = nx.multi_source_dijkstra_path_length(G, targets)
         forward_length = nx.multi_source_dijkstra_path_length(forward_G, seeds)
 
     # running the algorithms and get the pathways, true positives, and false positives
-    pathway_pathlinker, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=colors["black"],
-                                                                                direction=False)
-    pathway_ours, our_recalls, our_precisions = run_algorithm(dataset=data, method="ours", color=colors["deepskyblue"],
+    pathway_pl, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=pallet[0],
+                                                                        direction=False)
+    pathway_ours, our_recalls, our_precisions = run_algorithm(dataset=data, method="ours", color=pallet[1],
                                                               alpha=5, c=0.25, k=pl_edge_len, direction=False)
-    pathway_rwr, rwr_recalls, rwr_precisions = run_algorithm(dataset=data, method="rwr", color=colors["silver"],
+    pathway_rwr, rwr_recalls, rwr_precisions = run_algorithm(dataset=data, method="rwr", color=pallet[2],
                                                              k=pl_edge_len, direction=False)
+    pathway_el, el_recalls, el_precisions = run_edge_linker(dataset=data, color=pallet[3], k=pl_edge_len,
+                                                            direction=False)
     if PLOT_EDGES_PRC:
         overall_recalls_ours.append(our_recalls)
         overall_precisions_ours.append(our_precisions)
@@ -268,6 +313,8 @@ for data in datas:
         overall_precisions_pl.append(pl_precisions)
         overall_recalls_rwr.append(rwr_recalls)
         overall_precisions_rwr.append(rwr_precisions)
+        overall_recalls_el.append(el_recalls)
+        overall_precisions_el.append(el_precisions)
 
         plt.legend()
         plt.title("recall-precision for " + data)
@@ -275,41 +322,49 @@ for data in datas:
         plt.close()
 
     if COMPUTE_RTF:
-        our_seeds, our_targets, rwr_seeds, rwr_targets, pl_seeds, pl_targets = plot_rtf_found(seeds, targets,
-                                                                                              pathway_ours, pathway_rwr,
-                                                                                              pathway_pathlinker, data)
+        our_seeds, our_targets, rwr_seeds, rwr_targets, pl_seeds, pl_targets, el_seeds, el_targets = \
+            plot_rtf_found(seeds, targets, pathway_ours, pathway_rwr, pathway_pl, pathway_el, data)
         overall_r_ours.append(our_seeds)
         overall_tf_ours.append(our_targets)
         overall_r_pl.append(pl_seeds)
         overall_tf_pl.append(pl_targets)
         overall_r_rwr.append(rwr_seeds)
         overall_tf_rwr.append(rwr_targets)
+        overall_r_el.append(el_seeds)
+        overall_tf_el.append(el_targets)
 
     # Node AUPRC
     if PLOT_NODES_PRC:
-        our_recalls, our_precisions, rwr_recalls, rwr_precisions, pl_recalls, pl_precisions, node_len = plot_node_auprc(
-            subpathway, pathway_ours, pathway_rwr, pathway_pathlinker, data)
+        our_recalls, our_precisions, rwr_recalls, rwr_precisions, pl_recalls, pl_precisions, el_recalls, \
+            el_precisions, node_len = plot_node_auprc(subpathway, pathway_ours, pathway_rwr, pathway_pl, pathway_el,
+                                                      data)
         overall_node_recalls_ours.append(our_recalls)
         overall_node_precisions_ours.append(our_precisions)
         overall_node_recalls_pl.append(pl_recalls)
         overall_node_precisions_pl.append(pl_precisions)
         overall_node_recalls_rwr.append(rwr_recalls)
         overall_node_precisions_rwr.append(rwr_precisions)
+        overall_node_recalls_el.append(el_recalls)
+        overall_node_precisions_el.append(el_precisions)
         total_pathway_node_lengths += node_len
 
 if PLOT_EDGES_PRC:
     plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
-                   overall_recalls_pl, overall_precisions_pl, "overall-edge-PRC")
+                   overall_recalls_pl, overall_precisions_pl, overall_recalls_el, overall_precisions_el,
+                   "overall-edge-PRC")
 
 if PLOT_NODES_PRC:
     plot_total_prc(overall_node_recalls_ours, overall_node_precisions_ours, overall_node_recalls_rwr,
-                   overall_node_precisions_rwr, overall_node_recalls_pl, overall_node_precisions_pl, "overall-node-PRC")
+                   overall_node_precisions_rwr, overall_node_recalls_pl, overall_node_precisions_pl,
+                   overall_node_recalls_el, overall_node_precisions_el, "overall-node-PRC")
 
 if COMPUTE_RTF:
     plot_total_prc([[(i + 1) for i in range(len(r_ours))] for r_ours in overall_r_ours], overall_r_ours,
                    [[(i + 1) for i in range(len(r_rwr))] for r_rwr in overall_r_rwr], overall_r_rwr,
-                   [[(i + 1) for i in range(len(r_pl))] for r_pl in overall_r_pl], overall_r_pl, "overall-receptors")
+                   [[(i + 1) for i in range(len(r_pl))] for r_pl in overall_r_pl], overall_r_pl,
+                   [[(i + 1) for i in range(len(r_el))] for r_el in overall_r_el], overall_r_el, "overall-receptors")
 
     plot_total_prc([[(i + 1) for i in range(len(r_ours))] for r_ours in overall_tf_ours], overall_tf_ours,
                    [[(i + 1) for i in range(len(r_rwr))] for r_rwr in overall_tf_rwr], overall_tf_rwr,
-                   [[(i + 1) for i in range(len(r_pl))] for r_pl in overall_tf_pl], overall_tf_pl, "overall-tfs")
+                   [[(i + 1) for i in range(len(r_pl))] for r_pl in overall_tf_pl], overall_tf_pl,
+                   [[(i + 1) for i in range(len(r_el))] for r_el in overall_tf_el], overall_tf_el, "overall-tfs")
