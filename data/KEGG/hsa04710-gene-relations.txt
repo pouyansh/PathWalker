@@ -1,0 +1,5 @@
+#id1	id2	type	subtype
+27	21	PPrel	inhibition|ubiquitination
+47	21	PPrel	activation|phosphorylation
+55	13	PPrel	activation|phosphorylation
+65	64	PPrel	inhibition

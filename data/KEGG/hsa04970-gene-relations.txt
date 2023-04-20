@@ -1,0 +1,9 @@
+#id1	id2	type	subtype
+76	77	PPrel	activation
+36	41	PPrel	activation
+41	42	PPrel	activation
+37	51	PPrel	activation
+51	52	PPrel	activation
+47	48	PPrel	indirect effect
+38	51	PPrel	activation
+73	74	PPrel	activation

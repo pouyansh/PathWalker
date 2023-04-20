@@ -1,0 +1,4 @@
+#id	component_ids	mapped_names	kegg_names
+401	92|93|94	P56945|Q05397	hsa:1398 hsa:1399|hsa:5747|hsa:9564
+402	44|45	Q8WUW1|Q92558	hsa:55845|hsa:8936
+403	49|50|51	Q9NYB9	hsa:10152|hsa:10787 hsa:3071|hsa:23191 hsa:26999

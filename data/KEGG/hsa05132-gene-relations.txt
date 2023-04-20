@@ -1,0 +1,102 @@
+#id1	id2	type	subtype
+588	618	PPrel	activation|indirect effect
+486	437	PPrel	activation|phosphorylation
+797	810	PPrel	activation
+618	619	PPrel	activation|phosphorylation
+437	490	PPrel	activation|phosphorylation
+797	798	PPrel	activation
+619	621	PPrel	activation|indirect effect
+431	490	PPrel	activation
+800	816	PPrel	activation
+621	612	PPrel	compound
+428	490	PPrel	activation
+951	819	PPrel	activation|phosphorylation
+621	631	PPrel	compound
+819	820	PPrel	activation|phosphorylation
+612	613	PPrel	activation
+598	938	PPrel	activation
+613	615	PPrel	activation
+638	919	PPrel	activation|phosphorylation
+631	633	PPrel	activation|indirect effect
+631	632	PPrel	activation|indirect effect
+561	943	PPrel	indirect effect|inhibition
+524	525	PPrel	activation
+950	442	PPrel	activation|ubiquitination
+528	525	PPrel	activation
+530	943	PPrel	activation
+525	943	PPrel	activation|indirect effect
+568	569	PPrel	activation
+547	546	PPrel	activation
+546	943	PPrel	activation
+791	792	PPrel	activation
+944	945	PPrel	activation
+792	951	PPrel	activation
+945	432	PPrel	activation
+951	948	PPrel	activation
+939	748	PPrel	binding/association
+801	800	PPrel	activation
+451	946	PPrel	activation
+780	781	PPrel	activation|indirect effect
+946	947	PPrel	activation
+784	781	PPrel	activation|indirect effect
+947	432	PPrel	activation
+781	810	PPrel	indirect effect|inhibition
+432	439	PPrel	activation
+826	827	PPrel	indirect effect|inhibition
+439	948	PPrel	activation
+826	808	PPrel	activation|indirect effect
+940	755	PPrel	binding/association
+446	426	PPrel	activation
+808	831	PPrel	activation|indirect effect
+751	941	PPrel	activation
+426	432	PPrel	activation
+843	951	PPrel	activation
+700	702	PPrel	binding/association
+448	425	PPrel	activation
+508	498	PPrel	activation
+942	696	PPrel	activation|indirect effect
+425	432	PPrel	activation
+498	952	PPrel	activation
+717	718	PPrel	binding/association
+948	949	PPrel	activation|phosphorylation
+505	952	PPrel	activation
+717	719	PPrel	binding/association
+948	488	PPrel	activation|phosphorylation
+952	515	PPrel	activation|indirect effect
+892	891	PPrel	binding/association
+948	486	PPrel	activation|phosphorylation
+891	890	PPrel	binding/association
+949	442	PPrel	activation|phosphorylation
+511	518	PPrel	activation
+892	893	PPrel	activation|indirect effect
+949	530	PPrel	activation|phosphorylation
+515	518	PPrel	activation
+887	892	PPrel	inhibition
+442	943	PPrel	dissociation
+515	502	PPrel	activation
+726	727	PPrel	indirect effect|inhibition
+515	503	PPrel	activation
+872	876	PPrel	activation|indirect effect
+584	952	PPrel	indirect effect|inhibition
+871	876	PPrel	activation|indirect effect
+581	578	PPrel	activation|indirect effect
+599	598	PPrel	activation
+578	515	PPrel	activation|indirect effect
+596	638	PPrel	activation
+557	558	PPrel	activation
+588	953	PPrel	activation
+638	641	PPrel	activation|phosphorylation
+618	558	PPrel	activation|phosphorylation
+953	607	PPrel	activation
+596	524	PPrel	activation|indirect effect
+558	489	PPrel	activation|phosphorylation
+607	606	PPrel	activation
+591	524	PPrel	activation|indirect effect
+489	428	PPrel	activation|phosphorylation
+615	953	PPrel	activation
+588	524	PPrel	activation|indirect effect
+488	428	PPrel	activation|phosphorylation
+951	816	PPrel	activation
+488	431	PPrel	activation|phosphorylation
+591	618	PPrel	activation|indirect effect
+816	797	PPrel	activation

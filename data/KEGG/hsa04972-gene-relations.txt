@@ -1,0 +1,7 @@
+#id1	id2	type	subtype
+115	192	PPrel	activation
+192	193	PPrel	activation
+49	190	PPrel	activation|indirect effect
+49	52	PPrel	activation
+52	53	PPrel	activation
+50	52	PPrel	activation

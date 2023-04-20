@@ -1,0 +1,5 @@
+#id1	id2	type	subtype
+84	85	PPrel	activation
+78	79	PPrel	activation
+222	59	PPrel	activation
+223	222	PPrel	activation

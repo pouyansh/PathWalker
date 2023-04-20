@@ -1,0 +1,13 @@
+#id1	id2	type	subtype
+29	28	PPrel	indirect effect
+30	28	PPrel	indirect effect
+28	27	PPrel	activation
+27	26	PPrel	activation|phosphorylation
+15	26	PPrel	activation|phosphorylation
+26	24	PPrel	activation|phosphorylation
+14	17	PPrel	activation|phosphorylation
+17	16	PPrel	activation|phosphorylation
+12	14	PPrel	activation
+18	19	PPrel	binding/association
+20	22	PPrel	dissociation
+20	31	PPrel	activation

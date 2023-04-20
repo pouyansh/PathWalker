@@ -1,0 +1,25 @@
+#id1	id2	type	subtype
+179	15	PPrel	inhibition|ubiquitination
+32	33	PPrel	activation|indirect effect
+134	135	PPrel	activation
+152	153	PPrel	inhibition
+34	35	PPrel	activation|indirect effect
+126	127	PPrel	activation
+17	32	PPrel	activation
+166	168	PPrel	activation
+32	167	PPrel	activation|indirect effect
+167	166	PPrel	activation
+67	66	PPrel	inhibition|phosphorylation
+11	15	PPrel	activation
+35	152	PPrel	inhibition
+166	152	PPrel	inhibition
+41	11	PPrel	inhibition
+78	14	PPrel	activation
+127	121	PPrel	activation|indirect effect
+35	154	PPrel	activation
+120	121	PPrel	activation|indirect effect
+154	155	PPrel	activation
+135	136	PPrel	activation|indirect effect
+168	153	PPrel	activation
+41	35	PPrel	activation
+33	34	PPrel	activation

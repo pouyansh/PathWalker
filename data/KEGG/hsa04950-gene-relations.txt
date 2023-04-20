@@ -1,0 +1,5 @@
+#id1	id2	type	subtype
+33	37	PPrel	indirect effect
+34	32	PPrel	indirect effect
+8	29	PPrel	inhibition
+35	32	PPrel	indirect effect

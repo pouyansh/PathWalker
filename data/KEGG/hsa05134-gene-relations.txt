@@ -1,0 +1,19 @@
+#id1	id2	type	subtype
+204	202	PPrel	activation
+198	208	PPrel	activation
+201	208	PPrel	activation
+202	208	PPrel	activation
+158	223	PPrel	binding/association
+157	156	PPrel	binding/association
+136	131	PPrel	activation
+82	76	PPrel	dissociation
+130	131	PPrel	activation
+131	133	PPrel	activation
+179	182	PPrel	activation
+222	62	PPrel	activation
+62	65	PPrel	activation
+62	64	PPrel	activation
+66	67	PPrel	activation|indirect effect
+66	62	PPrel	activation|indirect effect
+62	67	PPrel	activation|indirect effect
+204	201	PPrel	activation

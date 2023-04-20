@@ -1,0 +1,5 @@
+#id	component_ids	mapped_names	kegg_names
+151	14|15	P04156	hsa:5621|hsa:5621
+152	16|55	P04156	hsa:5621|hsa:5621
+153	18|65	P04156	hsa:5621|hsa:5621
+154	19|66	P04156	hsa:5621|hsa:5621

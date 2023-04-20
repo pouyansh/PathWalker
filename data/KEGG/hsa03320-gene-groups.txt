@@ -1,0 +1,4 @@
+#id	component_ids	mapped_names	kegg_names
+79	25|26	Q07869	hsa:5465|hsa:6256 hsa:6257 hsa:6258
+80	27|28	Q03181	hsa:5467|hsa:6256 hsa:6257 hsa:6258
+81	29|30	P37231	hsa:5468|hsa:6256 hsa:6257 hsa:6258

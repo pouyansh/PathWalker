@@ -1,0 +1,3 @@
+#id	mapped_name	kegg_name
+60	P19367|P52789|P52790|Q2TB90	hsa:3098|hsa:3099|hsa:3101|hsa:80201
+61	P35557	hsa:2645

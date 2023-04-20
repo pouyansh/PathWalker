@@ -1,0 +1,4 @@
+#id	component_ids	mapped_names	kegg_names
+192	106|21	Q7RTX0|Q8TE23	hsa:80834|hsa:83756
+193	101|108	Q7RTX0|Q7RTX1	hsa:80835|hsa:83756
+194	126|57	Q7Z443|Q9P0L9	hsa:342372|hsa:9033

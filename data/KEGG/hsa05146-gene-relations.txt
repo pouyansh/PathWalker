@@ -1,0 +1,11 @@
+#id1	id2	type	subtype
+165	163	PPrel	activation|compound
+274	273	PPrel	inhibition
+293	115	PPrel	activation|indirect effect
+101	35	PPrel	indirect effect|inhibition
+161	164	PPrel	activation|indirect effect
+162	165	PPrel	activation|indirect effect
+164	175	ECrel	activation|compound|indirect effect
+123	113	PPrel	activation
+23	43	PPrel	activation
+43	35	PPrel	activation|indirect effect

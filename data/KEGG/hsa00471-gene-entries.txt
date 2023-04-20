@@ -1,0 +1,5 @@
+#id	mapped_name	kegg_name
+25	Q7Z3D6	hsa:80017
+27	P00367|P49448	hsa:2746|hsa:2747
+31	O94925|Q9UI32	hsa:27165|hsa:2744
+32	O94925|Q9UI32	hsa:27165|hsa:2744

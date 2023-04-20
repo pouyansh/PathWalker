@@ -1,0 +1,5 @@
+#id	mapped_name	kegg_name
+24	P20132|Q96GA7	hsa:10993|hsa:113675
+32	O15382|P54687	hsa:586|hsa:587
+34	O15382|P54687	hsa:586|hsa:587
+41	O15382|P54687	hsa:586|hsa:587

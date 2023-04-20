@@ -1,0 +1,3 @@
+#id1	id2	type	subtype
+27	32	ECrel	compound
+25	31	ECrel	compound

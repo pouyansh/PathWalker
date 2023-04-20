@@ -1,0 +1,2 @@
+#id	component_ids	mapped_names	kegg_names
+119	110|111|26	Q12797|Q13061|Q92736	hsa:10345|hsa:444|hsa:6262

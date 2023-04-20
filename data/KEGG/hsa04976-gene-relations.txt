@@ -1,0 +1,7 @@
+#id1	id2	type	subtype
+211	296	PCrel	binding/association
+119	86	PCrel	activation
+326	87	PPrel	activation
+131	294	PCrel	binding/association
+87	105	PCrel	activation
+105	106	PCrel	activation

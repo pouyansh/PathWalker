@@ -1,0 +1,2 @@
+#id	component_ids	mapped_names	kegg_names
+220	193|194	O00327|O15516	hsa:406|hsa:9575

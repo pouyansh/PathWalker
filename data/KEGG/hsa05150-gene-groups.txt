@@ -1,0 +1,5 @@
+#id	component_ids	mapped_names	kegg_names
+212	24|25|26	P00736|P09871	hsa:712 hsa:713 hsa:714|hsa:715|hsa:716
+213	27|28	P06681	hsa:717|hsa:720 hsa:721
+214	21|22	P00751|P01024	hsa:629|hsa:718
+215	173|184	P05107	hsa:3683 hsa:3684|hsa:3689

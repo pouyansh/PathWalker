@@ -1,0 +1,4 @@
+#id1	id2	type	subtype
+326	14	PPrel	inhibition
+203	292	PPrel	inhibition
+25	21	PPrel	inhibition

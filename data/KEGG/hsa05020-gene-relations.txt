@@ -1,0 +1,12 @@
+#id1	id2	type	subtype
+86	107	PPrel	activation
+86	91	PPrel	activation
+86	89	PPrel	binding/association
+115	116	PPrel	activation
+116	117	PPrel	activation
+86	88	PPrel	binding/association
+72	115	PPrel	activation|indirect effect
+34	150	PPrel	binding/association
+72	136	PPrel	activation|indirect effect
+86	97	PPrel	activation|indirect effect
+86	99	PPrel	indirect effect|inhibition

@@ -1,0 +1,5 @@
+#id1	id2	type	subtype
+149	115	PPrel	activation|indirect effect
+136	50	PPrel	activation|indirect effect
+189	147	PPrel	activation
+147	148	PPrel	activation

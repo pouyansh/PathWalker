@@ -1,0 +1,5 @@
+#id1	id2	type	subtype
+194	195	PPrel	binding/association
+193	141	PCrel	activation
+193	191	PCrel	binding/association
+193	195	PCrel	activation|binding/association

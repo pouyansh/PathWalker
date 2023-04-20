@@ -1,0 +1,2 @@
+#id	component_ids	mapped_names	kegg_names
+285	138|140|141	P11831|P19419|P28324	hsa:2002|hsa:2005|hsa:6722

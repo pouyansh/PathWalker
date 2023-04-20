@@ -1,0 +1,6 @@
+#id	component_ids	mapped_names	kegg_names
+131	12|13	P05556	hsa:3655 hsa:3673 hsa:3674 hsa:3675 hsa:3685|hsa:3688
+132	45|8	P24385	hsa:1019 hsa:1021|hsa:595
+133	6|7	P24941	hsa:1017|hsa:898 hsa:9134
+134	24|25	P01106|P61244	hsa:4149|hsa:4609
+135	18|19	P10826	hsa:5915|hsa:6256 hsa:6257 hsa:6258

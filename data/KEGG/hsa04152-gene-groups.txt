@@ -1,0 +1,3 @@
+#id	component_ids	mapped_names	kegg_names
+238	211|91	P49815|Q92574	hsa:7248|hsa:7249
+239	155|156|38	Q15831	hsa:51719 hsa:81617|hsa:55437 hsa:92335|hsa:6794

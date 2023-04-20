@@ -1,0 +1,6 @@
+#id1	id2	type	subtype
+313	314	PPrel	binding/association
+83	432	PPrel	binding/association
+251	250	PPrel	binding/association
+126	127	PPrel	binding/association
+436	437	PPrel	binding/association

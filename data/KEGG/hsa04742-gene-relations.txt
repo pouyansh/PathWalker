@@ -1,0 +1,12 @@
+#id1	id2	type	subtype
+192	182	PPrel	activation
+191	45	PPrel	activation
+191	25	PPrel	activation
+21	106	PPrel	binding/association
+42	62	PPrel	activation
+193	191	PPrel	activation
+151	62	PPrel	activation|indirect effect
+57	126	PPrel	binding/association
+182	25	PPrel	activation
+101	108	PPrel	binding/association
+182	45	PPrel	activation

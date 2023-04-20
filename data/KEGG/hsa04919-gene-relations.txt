@@ -1,0 +1,33 @@
+#id1	id2	type	subtype
+45	15	PPrel	activation
+15	90	PPrel	activation|indirect effect
+14	13	PPrel	activation
+15	44	PPrel	activation
+93	94	PPrel	activation
+67	34	PPrel	activation
+13	151	PPrel	activation|phosphorylation
+32	33	PPrel	activation
+13	81	PPrel	activation|phosphorylation
+13	82	PPrel	activation|phosphorylation
+13	20	PPrel	inhibition|phosphorylation
+20	19	PPrel	inhibition|phosphorylation
+13	157	PPrel	inhibition|phosphorylation
+33	34	PPrel	activation|phosphorylation
+151	152	PPrel	inhibition
+34	74	PPrel	activation|phosphorylation
+157	158	PPrel	inhibition
+74	35	PPrel	activation|phosphorylation
+13	164	PPrel	inhibition|phosphorylation
+74	75	PPrel	activation|phosphorylation
+13	165	PPrel	inhibition|phosphorylation
+74	76	PPrel	activation|phosphorylation
+13	166	PPrel	inhibition|phosphorylation
+74	56	PPrel	activation|phosphorylation
+235	31	PPrel	activation|indirect effect
+158	51	PPrel	activation
+16	88	PPrel	activation|phosphorylation
+74	90	PPrel	activation
+235	32	PPrel	activation|indirect effect
+236	196	PPrel	activation
+16	74	PPrel	activation|indirect effect
+196	15	PPrel	activation|phosphorylation

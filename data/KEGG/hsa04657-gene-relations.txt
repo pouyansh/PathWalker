@@ -1,0 +1,7 @@
+#id1	id2	type	subtype
+18	14	PPrel	binding/association
+18	19	PPrel	binding/association
+14	13	PPrel	activation|phosphorylation
+20	33	PPrel	inhibition
+13	20	PPrel	phosphorylation
+16	14	PPrel	activation

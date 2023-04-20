@@ -1,0 +1,2 @@
+#id	component_ids	mapped_names	kegg_names
+327	205|206	Q86UW1|Q86UW2	hsa:123264|hsa:200931

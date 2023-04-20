@@ -1,0 +1,59 @@
+#id1	id2	type	subtype
+7	77	PPrel	activation|indirect effect|phosphorylation
+6	12	PPrel	binding/association
+11	141	PPrel	binding/association
+141	6	PPrel	binding/association
+46	47	PPrel	binding/association
+7	76	PPrel	activation|indirect effect|phosphorylation
+78	81	PPrel	activation|phosphorylation
+34	37	PPrel	activation|phosphorylation
+149	36	PPrel	activation|phosphorylation
+79	80	PPrel	activation|phosphorylation
+6	151	PPrel	activation|indirect effect
+175	79	PPrel	binding/association
+130	6	PPrel	inhibition
+45	46	PPrel	activation
+9	5	PPrel	activation
+93	95	PPrel	activation|dephosphorylation
+7	78	PPrel	activation|indirect effect
+151	152	PPrel	activation
+12	81	PPrel	binding/association
+49	100	PPrel	indirect effect|inhibition
+11	6	PPrel	inhibition
+6	56	PPrel	binding/association
+69	6	PPrel	indirect effect|inhibition
+56	57	PPrel	activation|indirect effect
+32	35	PPrel	activation|indirect effect|phosphorylation
+32	34	PPrel	activation|indirect effect|phosphorylation
+18	19	PPrel	dissociation
+6	173	PPrel	activation
+32	149	PPrel	activation|indirect effect|phosphorylation
+98	99	PPrel	activation|phosphorylation
+7	6	PPrel	activation
+48	49	PPrel	binding/association
+78	80	PPrel	binding/association
+8	7	PPrel	activation
+128	47	PPrel	binding/association
+81	98	PPrel	activation|compound
+10	8	PPrel	inhibition
+135	136	PPrel	activation
+80	81	PPrel	binding/association
+65	6	PPrel	activation|indirect effect
+64	65	PPrel	activation
+121	6	PPrel	activation
+67	69	PPrel	activation|indirect effect
+81	93	PPrel	activation|compound
+66	67	PPrel	activation
+57	58	PPrel	activation|indirect effect
+143	144	PPrel	activation|indirect effect
+5	143	PPrel	activation|indirect effect
+120	121	PPrel	activation
+5	57	PPrel	activation|indirect effect
+32	17	PPrel	activation|phosphorylation
+47	48	PPrel	activation|phosphorylation
+14	138	PPrel	activation|phosphorylation
+13	14	PPrel	activation|phosphorylation
+6	13	PPrel	activation|indirect effect
+36	75	PPrel	activation|phosphorylation
+17	18	PPrel	activation|phosphorylation
+37	75	PPrel	activation|phosphorylation

@@ -1,0 +1,4 @@
+#id	component_ids	mapped_names	kegg_names
+201	87|88|89	Q53ET0	hsa:10488 hsa:1385 hsa:1386 hsa:148327 hsa:468 hsa:64764 hsa:84699 hsa:90993 hsa:9586|hsa:1387 hsa:2033|hsa:200186
+202	192|193	Q07869|Q9UBK2	hsa:10891|hsa:5465
+203	101|93	Q12778|Q9UBK2	hsa:10891|hsa:2308

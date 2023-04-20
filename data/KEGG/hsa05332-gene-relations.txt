@@ -1,0 +1,4 @@
+#id1	id2	type	subtype
+50	47	PPrel	activation
+24	21	PPrel	activation
+43	34	PPrel	activation

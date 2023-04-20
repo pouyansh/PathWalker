@@ -1,0 +1,6 @@
+#id	mapped_name	kegg_name
+39	Q8NFF5	hsa:80308
+41	Q969G6	hsa:55312
+73	P30043	hsa:645
+78	O14638|P22413	hsa:5167|hsa:5169
+79	P11117|P13686|P24666	hsa:52|hsa:53|hsa:54

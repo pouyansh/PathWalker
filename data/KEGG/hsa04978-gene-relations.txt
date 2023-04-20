@@ -1,0 +1,2 @@
+#id1	id2	type	subtype
+111	126	PCrel	binding/association

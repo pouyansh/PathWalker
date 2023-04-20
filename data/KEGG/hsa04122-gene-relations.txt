@@ -1,0 +1,7 @@
+#id1	id2	type	subtype
+39	41	PPrel	activation
+40	41	PPrel	binding/association
+9	4	PPrel	activation
+8	7	PPrel	activation
+5	4	PPrel	activation
+6	9	PPrel	activation
