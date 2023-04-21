@@ -1,0 +1,86 @@
+We need a "gold standard" list of receptors to systematically find them in signaling pathway databases.
+
+* Receptors from paper
+First, take receptor information from the following paper:
+#+BEGIN_VERSE
+*Mapping the human membrane proteome: a majority of the human membrane proteins can be classified according to function and evolutionary origin*
+~Almen et. al., BMC Biology 2009, 7:50~
+http://www.biomedcentral.com/1741-7007/7/50
+#+END_VERSE
+Additional file 1. The table contains the International Protein Index (IPI) accession numbers and classification for the final membrane protein dataset together with predictions by Phobius, SOSUI, and TMHMM.
+
+| Legend                                                                                                                                                                                                  |
+| IPI Accession – The International Protein Index accesion number                                                                                                                                         |
+| IPI Description – Descriription from IPI annotation                                                                                                                                                     |
+| Main Class – The main functional class of the protein                                                                                                                                                   |
+| Classification – Classification hierarchy for the protein. EC number is assigned for enzymes and semicolon separated classes and subclasses for all other proteins                                      |
+| Protein coding – A protein is assigned as “Valid” if it is confirmed as protein coding by  Clamp et al. And “Invalid” if it is confirmed as non-protein coding or not represented in the Clamp dataset. |
+| Phobius TM – Number of alpha-helices predicted by phobius                                                                                                                                               |
+| Phobius SP – Assigned “Y” if the protein is predicted to have a signal peptide and “0” if not.                                                                                                          |
+| Phobius topology – The topology of the protein as predicted by Phobius.                                                                                                                                 |
+| SOSUI TM – Number of alpha-helices predicted by SOSUI.                                                                                                                                                  |
+| SOSUI topology – The topology of the protein as predicted by SOSUI. ATTENTION!! The topology index starts after a potential SP predicted by Phobius.                                                    |
+| TMHMM TM – Number of alpha-helices predicted by TMHMM.                                                                                                                                                  |
+| TMHMM topology – The topology of the protein as predicted by TMHMM. ATTENTION!! The topology index starts after a potential SP predicted by Phobius.                                                    |
+
+Additional file 3. A short user guide for searching and further analysis of the dataset and classification.
+
+* Processing Steps
+** Convert Data sheet to TSV
+
+** Get Receptors (1352 reported, 1350 here)
+#+BEGIN_SRC bash
+awk -F"\t" '($3=="Receptors"){print $0}' 1741-7007-7-50-s1-datasheet.tsv > receptors.tsv
+#+END_SRC
+
+** There are 5 Families & 61 Groups (should be 5 and 63)
+#+BEGIN_SRC bash
+cut -f 4 receptors.tsv | sed 's/;.*//g' | sort -u 
+cut -f 4 receptors.tsv | sed 's/.*;//g' | sort -u  | wc -l
+#+END_SRC
+
+** Convert IPI to Uniprot. 
+#+BEGIN_SRC bash
+cut -f 1 receptors.txt > receptors-ipi-ids.txt
+#+END_SRC
+I uploaded receptors-ipi-ids.txt to http://www.uniprot.org/mapping/. Results  saved in uniprot-* files.
+ 1,248 out of 1,350 identifiers mapped to 2,124 identifiers in the target data set
+
+** Manually add CD3 subunits to uniprot-target-list.txt!!
+I also manually added the following proteins to the receptor file.  They are needed for TCR, and if they aren't present then the KEGG has no receptors for the TCR pathway.
+| CD3D | CD3d molecule, delta (CD3-TCR complex)   | P04234 |
+| CD3E | CD3e molecule, epsilon (CD3-TCR complex) | P07766 |
+| CD3G | CD3g molecule, gamma (CD3-TCR complex)   | P09693 |
+*** (No longer done): Add GZD4 FZD6 to uniprot-target-list.txt
+These are the only two FZD receptors that were not in the systematic list.
+| FZD4 | frizzled family receptor 4 | Q9ULV1 |
+| FZD6 | frizzled family receptor 6 | O60353 |
+** Grep Uniprot IDs with NetPath pathways:
+#+BEGIN_SRC bash
+grep -f uniprot-target-list.txt ../interactions/netpath/pathways/*-nodes.txt | \
+grep -v accessible | sed 's/.*\///g' | \
+sed 's/-nodes.txt:/\t/g' | cut -f 1,2,4 > netpath-receptors.txt
+#+END_SRC
+** Make the a Histogram of the IPI-to-Uniprot IDs
+#+BEGIN_SRC bash
+sed 's/IPI//g' uniprot-mapping-table.txt | awk '{print $2"\t"$1}' | \
+grep -v From > uniprot-mapping-table-formatlab.txt
+cut -f 2 netpath-receptors.txt > tmp
+grep -f tmp uniprot-mapping-table.txt > netpath-uniprot-mapping.txt
+sed 's/IPI//g' netpath-uniprot-mapping.txt | awk '{print $2"\t"$1}' | \
+grep -v From > netpath-uniprot-mapping-formatlab.txt
+#+END_SRC
+
+** Grep Uniprot IDs with the direct-link netpath pathways:
+#+BEGIN_SRC bash
+grep -f uniprot-target-list.txt ../interactions/netpath/pathways/*-nodes.txt | \
+grep -v accessible | grep -v 'indirect-links' | sed 's/.*\///g' | \
+sed 's/-nodes.txt:/\t/g' | cut -f 1,2,4 | \
+sed 's/direct-links-//g' > direct-links-netpath-receptors.txt
+#+END_SRC
+** 2018-04-09-Update on unmapped IPIs
+    I manually uploaded the uniprot-not-mapped.txt file to PICR (http://www.ebi.ac.uk/Tools/picr/) and 
+    it found "identical" maps to 26 proteins in in uniprot-not-mapped.txt file. The previously missing 26 
+    IPI->uniprot maps can be found at uniprot-missing-picr-mapped.txt. The updated pathway -nodes.txt files can
+    be found at ../interactions/netpath/. This now adds FZD4 and FZD6 as well. 
+

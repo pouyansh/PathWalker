@@ -1,0 +1,16 @@
+TFCheckpoint:
+A resource for Human, Mouse and Rat Transcription Factors 
+The Transcription Factors in TFcheckpoint are manually checked for experimental evidence supporting their role in 
+1) regulation of RNA polymerase II and 2) specific DNA binding activity. 
+TFs supported by such evidence are marked as DbTF. 
+
+http://www.citeulike.org/user/ategge/article/12565305
+http://bioinformatics.oxfordjournals.org/content/early/2013/08/14/bioinformatics.btt432
+http://www.tfcheckpoint.org/
+(downloaded text file from website Aug 22 2013)
+
+## list of ALL TFs (Uniprot IDs):
+cut -f 5 TFcheckpoint.tsv | grep -v gene_symbol | sed 's/,/\n/g' | sort -u > all-tfs.txt
+
+## only get DNA-binding TFs (Uniprot IDs):
+awk -F"\t" '($10=="yes"){print $5}' TFcheckpoint.tsv | grep -v gene_symbol | sed 's/,/\n/g' > db-tfs.txt
