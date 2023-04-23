@@ -265,7 +265,7 @@ total_pathway_lengths = 0
 total_pathway_node_lengths = 0
 
 if JUST_CLEAN:
-    clean_receptors_and_tfs(DATABASE, graph, node_to_id, id_to_node)
+    clean_receptors_and_tfs(DATABASE, node_to_id, id_to_node, graph_map)
 else:
     pathway_names = read_pathway_names(DATABASE)
     for pathway_name in pathway_names:

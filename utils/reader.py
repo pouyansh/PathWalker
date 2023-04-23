@@ -83,12 +83,9 @@ def read_graph(path, graph_type):
             if sp:
                 if sp[0] not in graph:
                     graph[sp[0]] = []
-                if sp[1] not in graph:
-                    graph[sp[1]] = []
-                if sp[0] not in graph[sp[1]]:
+                if sp[1] not in graph[sp[0]]:
                     X.append([sp[0], sp[1], float(sp[2])])
                     graph[sp[0]].append(sp[1])
-                    graph[sp[1]].append(sp[0])
 
     node_to_id = {}
     id_to_node = []

@@ -27,42 +27,48 @@ def read_pathway_names(database, signaling=True):
 
 def read_pathway(database, pathway_name, node_to_id):
     edges = []
+    edges_original = []
     file = ""
+    count = 0
+    total = 0
     if database == "KEGG":
         file = "data/KEGG/" + pathway_name + "-expanded-edges.txt"
     if database == "NetPath":
         file = "data/NetPath/" + pathway_name + "-edges.txt"
     with open(file, 'r') as f:
         for line in f:
+            total += 1
             sp = line.split()
             if sp[0] != "#tail" and sp[1] in node_to_id and sp[0] in node_to_id:
                 if database == "KEGG":
                     edges.append([node_to_id[sp[0]], node_to_id[sp[1]]])
+                    edges_original.append([sp[0], sp[1]])
                 else:
                     edges.append([node_to_id[sp[1]], node_to_id[sp[0]]])
+                    edges_original.append([sp[1], sp[0]])
             else:
-                print(line)
-    return edges
+                count += 1
+                # print(line)
+    print("node elimination" + str(count/total))
+    return edges, edges_original, count/total
 
 
-def clean_pathway(database, pathway_edges, pathway_name, graph, id_to_node):
+def clean_pathway(database, pathway_edges, pathway_name, graph_map):
     sub_edges = []
     counter = 0
     for p in pathway_edges:
         check = False
-        for edge in graph:
-            if edge[0] == p[0] and edge[1] == p[1]:
-                sub_edges.append(p)
-                check = True
-                break
+        if p[0] in graph_map and p[1] in graph_map[p[0]]:
+            sub_edges.append(p)
+            check = True
         if not check:
             # print(id_to_node[p[0]] + " " + id_to_node[p[1]])
             counter += 1
     with open("data/" + database + "/cleaned_pathways/" + pathway_name + "-edges.txt", 'w') as f:
         for p in sub_edges:
-            f.write(id_to_node[p[0]] + " " + id_to_node[p[1]] + "\n")
-    print(counter / max(1, len(pathway_edges)))
-    return sub_edges
+            f.write(p[0] + " " + p[1] + "\n")
+    print("edge elimination", counter / max(1, len(pathway_edges)))
+    return sub_edges, counter / max(1, len(pathway_edges))
 
 
 def read_cleaned_pathway(database, pathway_name, node_to_id):
@@ -106,7 +112,7 @@ def read_raw_source_and_destinations(database, node_to_id):
     return [], []
 
 
-def compute_intersection(database, pathway_name, receptors, tfs, pathway_edges, id_to_node):
+def compute_intersection(database, pathway_name, receptors, tfs, pathway_edges, id_to_node, node_to_id):
     sub_receptors = []
     sub_tfs = []
     pathway_nodes = []
@@ -122,24 +128,28 @@ def compute_intersection(database, pathway_name, receptors, tfs, pathway_edges, 
         if tf in pathway_nodes:
             sub_tfs.append(tf)
 
-    with open("data/" + database + "/" + pathway_name + "-nodes.txt", 'w') as f:
+    with open("data/" + database + "/cleaned_pathways/" + pathway_name + "-nodes.txt", 'w') as f:
         f.write("#node\tnode_symbol\n")
         for receptor in sub_receptors:
             f.write(id_to_node[receptor] + "\treceptor\n")
         for tf in sub_tfs:
             f.write(id_to_node[tf] + "\ttf\n")
         for node in pathway_nodes:
-            if node not in sub_receptors and node not in sub_tfs:
-                f.write(id_to_node[node] + "\tnone\n")
+            if node_to_id[node] not in sub_receptors and node_to_id[node] not in sub_tfs:
+                f.write(node + "\tnone\n")
 
 
-def clean_receptors_and_tfs(database, graph, node_to_id, id_to_node):
+def clean_receptors_and_tfs(database, node_to_id, id_to_node, graph_map):
     pathway_names = read_pathway_names(database)
 
     receptors, tfs = read_raw_source_and_destinations(database, node_to_id)
 
-    for pathway_name in pathway_names:
-        print(pathway_name)
-        pathway_edges = read_pathway(database, pathway_name, node_to_id)
-        sub_edges = clean_pathway(database, pathway_edges, pathway_name, graph, id_to_node)
-        compute_intersection(database, pathway_name, receptors, tfs, sub_edges, id_to_node)
+    with open("data/" + database + "/cleaned_pathways/_signaling_pathway_list.txt", 'w') as f:
+        for pathway_name in pathway_names:
+            print(pathway_name)
+            pathway_edges, pathway_edges_original, percentage1 = read_pathway(database, pathway_name, node_to_id)
+            sub_edges, percentage2 = clean_pathway(database, pathway_edges_original, pathway_name, graph_map)
+            compute_intersection(database, pathway_name, receptors, tfs, sub_edges, id_to_node, node_to_id)
+            print("overall", percentage1 + (1-percentage1) * percentage2)
+            if percentage1 + (1-percentage1) * percentage2 < 0.3:
+                f.write(pathway_name + "\n")
