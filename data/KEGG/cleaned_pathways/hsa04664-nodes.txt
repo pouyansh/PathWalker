@@ -1,4 +1,8 @@
 #node	node_symbol
+P15498	tf
+P27361	tf
+P28482	tf
+Q16539	tf
 O00329	none
 O15530	none
 P15153	none
@@ -30,9 +34,7 @@ Q01362	none
 P45985	none
 P46734	none
 P52564	none
-P15498	none
 P17252	none
-P27361	none
 P0C869	none
 P47712	none
 Q3MJ16	none
@@ -40,7 +42,6 @@ Q68DD2	none
 Q86XP0	none
 Q9UP65	none
 P27986	none
-P28482	none
 P30273	none
 P43405	none
 P42336	none
@@ -48,7 +49,6 @@ P42338	none
 O15264	none
 P53778	none
 Q15759	none
-Q16539	none
 P52735	none
 Q07889	none
 Q07890	none

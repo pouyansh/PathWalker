@@ -1,5 +1,5 @@
 #node	node_symbol
-O14920	none
-P25963	none
+O14920	tf
+P25963	tf
 O43318	none
 Q8N5C8	none

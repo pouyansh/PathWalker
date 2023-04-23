@@ -1,4 +1,5 @@
 #node	node_symbol
+P60484	tf
 O00459	none
 O15357	none
 P16885	none
@@ -8,5 +9,4 @@ P27986	none
 Q13574	none
 P29218	none
 O14732	none
-P60484	none
 Q92569	none

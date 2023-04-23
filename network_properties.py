@@ -38,13 +38,14 @@ def compute_rtf_found(edges, seeds, targets, k=1000000):
 
 
 def plot_rtf_found(seeds, targets, our_edges, rwr_edges, pl_edges, el_edges, data):
-    our_seeds, our_targets = compute_rtf_found(our_edges, seeds, targets, k=len(pl_edges))
-    rwr_seeds, rwr_targets = compute_rtf_found(rwr_edges, seeds, targets, k=len(pl_edges))
+    our_seeds, our_targets = compute_rtf_found(our_edges, seeds, targets, k=len(our_edges))
+    rwr_seeds, rwr_targets = compute_rtf_found(rwr_edges, seeds, targets, k=len(rwr_edges))
     pl_seeds, pl_targets = compute_rtf_found(pl_edges, seeds, targets, k=len(pl_edges))
     el_seeds, el_targets = compute_rtf_found(el_edges, seeds, targets, k=len(el_edges))
 
     plt.title("number of receptors found for " + data)
-    plt.plot([i for i in range(len(pl_seeds))], pl_seeds, color=pallet[0], label="PathLinker")
+    if len(pl_edges) > 0:
+        plt.plot([i for i in range(len(pl_seeds))], pl_seeds, color=pallet[0], label="PathLinker")
     plt.plot([i for i in range(len(our_seeds))], our_seeds, color=pallet[1], label="ours")
     plt.plot([i for i in range(len(rwr_seeds))], rwr_seeds, color=pallet[2], label="RWR")
     plt.plot([i for i in range(len(el_seeds))], el_seeds, color=pallet[3], label="EdgeLinker")
@@ -53,7 +54,8 @@ def plot_rtf_found(seeds, targets, our_edges, rwr_edges, pl_edges, el_edges, dat
     plt.close()
 
     plt.title("number of transcription factors found for " + data)
-    plt.plot([i for i in range(len(pl_targets))], pl_targets, color=pallet[0], label="PathLinker")
+    if len(pl_edges) > 0:
+        plt.plot([i for i in range(len(pl_targets))], pl_targets, color=pallet[0], label="PathLinker")
     plt.plot([i for i in range(len(our_targets))], our_targets, color=pallet[1], label="ours")
     plt.plot([i for i in range(len(rwr_targets))], rwr_targets, color=pallet[2], label="RWR")
     plt.plot([i for i in range(len(el_targets))], el_targets, color=pallet[3], label="EdgeLinker")
@@ -99,14 +101,23 @@ def compute_pathway_nodes(pathway):
 
 
 def plot_prc(our_recall, our_precision, rwr_recall, rwr_precision, pl_recall, pl_precision, el_recall, el_precision):
-    plt.plot(pl_recall, pl_precision, color=pallet[0],
-             label="PathLinker " + str(round(auc(pl_recall, pl_precision), 3)))
+    try:
+        plt.plot(pl_recall, pl_precision, color=pallet[0],
+                 label="PathLinker " + str(round(auc(pl_recall, pl_precision), 3)))
+    except ValueError:
+        print("Pathlinker has not computed!")
     plt.plot(our_recall, our_precision, color=pallet[1],
              label="ours " + str(round(auc(our_recall, our_precision), 3)))
-    plt.plot(rwr_recall, rwr_precision, color=pallet[2],
-             label="RWR " + str(round(auc(rwr_recall, rwr_precision), 3)))
-    plt.plot(el_recall, el_precision, color=pallet[3],
-             label="EdgeLinker " + str(round(auc(el_recall, el_precision), 3)))
+    try:
+        plt.plot(rwr_recall, rwr_precision, color=pallet[2],
+                 label="RWR " + str(round(auc(rwr_recall, rwr_precision), 3)))
+    except ValueError:
+        print("RWR has not computed!")
+    try:
+        plt.plot(el_recall, el_precision, color=pallet[3],
+                 label="EdgeLinker " + str(round(auc(el_recall, el_precision), 3)))
+    except ValueError:
+        print("Edgelinker has not computed!")
     plt.legend()
 
 

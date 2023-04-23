@@ -1,21 +1,17 @@
 # this method reads the name of the pathways
-def read_pathway_names(database, signaling=True):
+def read_pathway_names(database, cleaned=False):
     names = []
     if database == "KEGG":
-        if signaling:
-            file = "data/KEGG/_signaling_pathway_list.txt"
+        if cleaned:
+            file = "data/KEGG/cleaned_pathways/_signaling_pathway_list.txt"
         else:
-            file = "data/KEGG/_pathway_list.txt"
+            file = "data/KEGG/_signaling_pathway_list.txt"
         with open(file, 'r') as f:
             for line in f:
                 if line:
                     sp = line.split()
                     if sp:
-                        if not signaling:
-                            sp2 = sp[0].split(":")
-                            names.append(sp2[1])
-                        else:
-                            names.append(sp[0])
+                        names.append(sp[0])
     if database == "NetPath":
         with open("data/NetPath_signaling_pathways.txt", 'r') as f:
             for line in f:
@@ -49,7 +45,6 @@ def read_pathway(database, pathway_name, node_to_id):
             else:
                 count += 1
                 # print(line)
-    print("node elimination" + str(count/total))
     return edges, edges_original, count/total
 
 
@@ -67,7 +62,6 @@ def clean_pathway(database, pathway_edges, pathway_name, graph_map):
     with open("data/" + database + "/cleaned_pathways/" + pathway_name + "-edges.txt", 'w') as f:
         for p in sub_edges:
             f.write(p[0] + " " + p[1] + "\n")
-    print("edge elimination", counter / max(1, len(pathway_edges)))
     return sub_edges, counter / max(1, len(pathway_edges))
 
 
@@ -84,7 +78,7 @@ def read_cleaned_pathway(database, pathway_name, node_to_id):
 def read_source_and_destinations(database, pathway_name, node_to_id):
     sources = []
     destinations = []
-    file = "data/" + database + "/" + pathway_name + "-node_to_id.txt"
+    file = "data/" + database + "/cleaned_pathways/" + pathway_name + "-nodes.txt"
     with open(file, 'r') as f:
         for line in f:
             sp = line.split()
@@ -102,12 +96,12 @@ def read_raw_source_and_destinations(database, node_to_id):
         tfs = []
         with open("data/KEGG/receptors/uniprot-target-list.txt", 'r') as f:
             for line in f:
-                if line and line in node_to_id:
-                    receptors.append(node_to_id[line])
+                if line.split() and line.split()[0] in node_to_id:
+                    receptors.append(node_to_id[line.split()[0]])
         with open("data/KEGG/transcription-factors/TFcheckpoint/all-tfs.txt", 'r') as f:
             for line in f:
-                if line and line in node_to_id:
-                    tfs.append(node_to_id[line])
+                if line.split() and line.split()[0] in node_to_id:
+                    tfs.append(node_to_id[line.split()[0]])
         return receptors, tfs
     return [], []
 
@@ -117,10 +111,10 @@ def compute_intersection(database, pathway_name, receptors, tfs, pathway_edges, 
     sub_tfs = []
     pathway_nodes = []
     for edge in pathway_edges:
-        if edge[0] not in pathway_nodes:
-            pathway_nodes.append(edge[0])
-        if edge[1] not in pathway_nodes:
-            pathway_nodes.append(edge[1])
+        if node_to_id[edge[0]] not in pathway_nodes:
+            pathway_nodes.append(node_to_id[edge[0]])
+        if node_to_id[edge[1]] not in pathway_nodes:
+            pathway_nodes.append(node_to_id[edge[1]])
     for receptor in receptors:
         if receptor in pathway_nodes:
             sub_receptors.append(receptor)
@@ -135,8 +129,11 @@ def compute_intersection(database, pathway_name, receptors, tfs, pathway_edges, 
         for tf in sub_tfs:
             f.write(id_to_node[tf] + "\ttf\n")
         for node in pathway_nodes:
-            if node_to_id[node] not in sub_receptors and node_to_id[node] not in sub_tfs:
-                f.write(node + "\tnone\n")
+            if node not in sub_receptors and node not in sub_tfs:
+                f.write(id_to_node[node] + "\tnone\n")
+    if len(sub_receptors) > 0 and len(sub_tfs) > 0:
+        return True
+    return False
 
 
 def clean_receptors_and_tfs(database, node_to_id, id_to_node, graph_map):
@@ -149,7 +146,7 @@ def clean_receptors_and_tfs(database, node_to_id, id_to_node, graph_map):
             print(pathway_name)
             pathway_edges, pathway_edges_original, percentage1 = read_pathway(database, pathway_name, node_to_id)
             sub_edges, percentage2 = clean_pathway(database, pathway_edges_original, pathway_name, graph_map)
-            compute_intersection(database, pathway_name, receptors, tfs, sub_edges, id_to_node, node_to_id)
-            print("overall", percentage1 + (1-percentage1) * percentage2)
-            if percentage1 + (1-percentage1) * percentage2 < 0.3:
-                f.write(pathway_name + "\n")
+            if compute_intersection(database, pathway_name, receptors, tfs, sub_edges, id_to_node, node_to_id):
+                print("overall", percentage1 + (1-percentage1) * percentage2)
+                if percentage1 + (1-percentage1) * percentage2 < 0.3:
+                    f.write(pathway_name + "\n")

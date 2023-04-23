@@ -29,24 +29,24 @@ These are some boolean variables that define what do we expect from the code
 '''
 DATABASE = "KEGG"
 # methods to run
-RUN_ALGORITHMS = False
-RUN_EDGE_LINKER = False
-JUST_CLEAN = True
+RUN_ALGORITHMS = True
+RUN_EDGE_LINKER = True
+JUST_CLEAN = False
 # output
-PLOT_EDGES_PRC = False
-PLOT_NODES_PRC = False
-COMPUTE_RTF = False
+PLOT_EDGES_PRC = True
+PLOT_NODES_PRC = True
+COMPUTE_RTF = True
 # writing methods
-WRITE_EDGES = False
-WRITE_EDGES_EDGE_LINKER = False
-WRITE_PRC = False
-WRITE_NODES_TO_ID_MAP = False
+WRITE_EDGES = True
+WRITE_EDGES_EDGE_LINKER = True
+WRITE_PRC = True
+WRITE_NODES_TO_ID_MAP = True
 # which methods to include
 INCLUDE_PATHLINKER = False
-INCLUDE_RWR = False
-INCLUDE_EDGE_LINKER = False
+INCLUDE_RWR = True
+INCLUDE_EDGE_LINKER = True
 # pathway
-HAS_CLEANED_PATHWAY = False
+HAS_CLEANED_PATHWAY = True
 
 overall_recalls_ours = []
 overall_precisions_ours = []
@@ -267,7 +267,7 @@ total_pathway_node_lengths = 0
 if JUST_CLEAN:
     clean_receptors_and_tfs(DATABASE, node_to_id, id_to_node, graph_map)
 else:
-    pathway_names = read_pathway_names(DATABASE)
+    pathway_names = read_pathway_names(DATABASE, cleaned=True)
     for pathway_name in pathway_names:
         pathlinker = "data/PathLinker_output/" + pathway_name + "k-2000-ranked-edges.txt"
 
@@ -281,7 +281,7 @@ else:
             subpathway = read_cleaned_pathway(DATABASE, pathway_name, node_to_id)
         else:
             pathway = read_pathway(DATABASE, pathway_name, node_to_id)
-            subpathway = clean_pathway(DATABASE, pathway, pathway_name, graph, id_to_node)
+            subpathway = clean_pathway(DATABASE, pathway, pathway_name, graph_map)
 
         total_pathway_lengths += len(subpathway)
 
@@ -293,24 +293,24 @@ else:
         # running the algorithms and get the pathways, true positives, and false positives
         if INCLUDE_PATHLINKER:
             pathway_pl, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=pallet[0],
-                                                                                direction=False)
+                                                                                direction=True)
         else:
-            pl_edge_len = len(graph)
+            pl_edge_len = 40000
             pl_recalls = []
             pl_precisions = []
             pathway_pl = []
         pathway_ours, our_recalls, our_precisions = run_algorithm(dataset=pathway_name, method="ours", color=pallet[1],
-                                                                  alpha=5, c=0.25, k=pl_edge_len, direction=False)
+                                                                  alpha=5, c=0.25, k=pl_edge_len, direction=True)
         if INCLUDE_RWR:
             pathway_rwr, rwr_recalls, rwr_precisions = run_algorithm(dataset=pathway_name, method="rwr",
-                                                                     color=pallet[2], k=pl_edge_len, direction=False)
+                                                                     color=pallet[2], k=pl_edge_len, direction=True)
         else:
             rwr_recalls = []
             rwr_precisions = []
             pathway_rwr = []
         if INCLUDE_EDGE_LINKER:
             pathway_el, el_recalls, el_precisions = run_edge_linker(dataset=pathway_name, color=pallet[3],
-                                                                    k=pl_edge_len, direction=False)
+                                                                    k=pl_edge_len, direction=True)
         else:
             el_recalls = []
             el_precisions = []
