@@ -114,7 +114,7 @@ def iterate_gpu(A,
     shaping = A.shape
     A = A.tocoo()
     indices = torch.from_numpy(np.vstack((A.row, A.col)).astype(np.int64))
-    values = torch.from_numpy(A.data)
+    values = torch.from_numpy(A.pathway_name)
     A = torch.sparse_coo_tensor(indices, values, shaping).to(device)
     A = A.to_sparse_csr()
     residuals = torch.from_numpy(np.zeros(max_iters)).to(device)

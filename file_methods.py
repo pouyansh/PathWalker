@@ -30,21 +30,7 @@ def read_precision_recall(filename):
     return precisions, recalls
 
 
-def read_source_and_destinations(path, nodes):
-    sources = []
-    destinations = []
-    with open(path, 'r') as f:
-        for line in f:
-            splitted = line.split()
-            if splitted[0] != "#node":
-                if splitted[1] == "tf":
-                    destinations.append(nodes[splitted[0]])
-                if splitted[1] == "receptor":
-                    sources.append(nodes[splitted[0]])
-    return sources, destinations
-
-
-def write_nodes(filename, nodes):
+def write_node_to_id(filename, nodes):
     with open(filename, 'w') as f:
         for node in nodes.keys():
             f.write(node + " " + str(nodes[node]) + "\n")
@@ -57,4 +43,3 @@ def read_nodes(filename):
             sp = line.split()
             nodes[sp[0]] = int(sp[1])
     return nodes
-

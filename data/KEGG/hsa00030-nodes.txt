@@ -1,0 +1,7 @@
+#node	node_symbol
+P29401	none
+P04075	none
+P37837	none
+Q96AT9	none
+Q96G03	none
+Q9H0I9	none

@@ -7,6 +7,8 @@ from sklearn.metrics import auc
 
 from file_methods import *
 from network_properties import plot_total_prc, plot_node_auprc, plot_rtf_found
+from pathway_files import read_cleaned_pathway, clean_pathway, read_pathway, read_source_and_destinations, \
+    read_pathway_names, clean_receptors_and_tfs
 from utils import reader
 from pyrwr.ppr import PPR
 import networkx as nx
@@ -15,10 +17,6 @@ G = nx.Graph()
 forward_G = nx.Graph()
 
 colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
-
-datas = ["Alpha6Beta4Integrin", "AndrogenReceptor", "BCR", "BDNF", "CRH", "EGFR1", "FSH", "Hedgehog", "IL1",
-         "IL2", "IL3", "IL4", "IL5", "IL6", "IL9", "IL-7", "KitReceptor", "Leptin", "Notch", "Oncostatin_M",
-         "Prolactin", "RANKL", "TCR", "TGF_beta_Receptor", "TNFalpha", "TSH", "TSLP", "TWEAK", "Wnt"]
 
 pallet = [colors['black'], colors['orangered'], colors['grey'], colors['lightgray']]
 # pallet = [colors['navy'], colors['orangered'], colors['dodgerblue'], colors['lightsteelblue']]
@@ -29,11 +27,13 @@ graph_type = "directed"
 ''' 
 These are some boolean variables that define what do we expect from the code 
 '''
-HAS_CLEANED_PATHWAY = True
-RUN_ALGORITHMS = True
-RUN_EDGE_LINKER = True
+DATABASE = "KEGG"
+# methods to run
+RUN_ALGORITHMS = False
+RUN_EDGE_LINKER = False
+JUST_CLEAN = True
 # output
-PLOT_EDGES_PRC = True
+PLOT_EDGES_PRC = False
 PLOT_NODES_PRC = False
 COMPUTE_RTF = False
 # writing methods
@@ -43,8 +43,10 @@ WRITE_PRC = False
 WRITE_NODES_TO_ID_MAP = False
 # which methods to include
 INCLUDE_PATHLINKER = False
-INCLUDE_RWR = True
-INCLUDE_EDGE_LINKER = True
+INCLUDE_RWR = False
+INCLUDE_EDGE_LINKER = False
+# pathway
+HAS_CLEANED_PATHWAY = False
 
 overall_recalls_ours = []
 overall_precisions_ours = []
@@ -111,7 +113,7 @@ def compute_recall_precision(sorted_edges, known_pathway, k, direction, recall_b
 
 def compute_edge_probs(adj_list, r):
     edge_probs = []
-    for node in nodes.values():
+    for node in node_to_id.values():
         total_weight = sum([edge[1] for edge in adj_list[node]])
         for edge in adj_list[node]:
             edge_probs.append([[int(node), int(edge[0])], r[int(node)] * edge[1] / total_weight])
@@ -129,7 +131,7 @@ def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_b
         new_graph = compute_new_graph(method, alpha)
         # creating the graph using the new weights
         adj_list = {}
-        for node in nodes.values():
+        for node in node_to_id.values():
             adj_list[int(node)] = []
         for i in range(len(new_graph)):
             adj_list[new_graph[i][0]].append([new_graph[i][1], new_graph[i][2]])
@@ -166,16 +168,6 @@ def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_b
     return result, recalls, precisions
 
 
-def read_pathway(path):
-    paths = []
-    with open(path, 'r') as f:
-        for line in f:
-            splitted = line.split()
-            if splitted[0] != "#tail" and splitted[1] in nodes and splitted[0] in nodes:
-                paths.append([nodes[splitted[1]], nodes[splitted[0]]])
-    return paths
-
-
 def compute_recall_precision_pathlinker(sorted_edges, known_pathway, k, direction, recall_bound=1.0):
     recalls = []
     precisions = []
@@ -204,7 +196,7 @@ def read_pathlinker_output(path):
         for line in f:
             sp = line.split()
             if sp[0] != "#tail":
-                edge = [nodes[sp[1]], nodes[sp[0]], int(sp[2])]
+                edge = [node_to_id[sp[1]], node_to_id[sp[0]], int(sp[2])]
                 if edge not in edges:
                     edges.append(edge)
     return edges
@@ -255,36 +247,14 @@ def run_edge_linker(dataset, color, k=1000000, recall_bound=1.0, direction=True)
     return result, recalls, precisions
 
 
-def clean_pathway(path, dataset):
-    subpath = []
-    for p in path:
-        for edge in graph:
-            if edge[0] == p[0] and edge[1] == p[1]:
-                subpath.append(p)
-    with open("data/cleaned_pathways/" + dataset + "-edges.txt", 'w') as f:
-        for p in subpath:
-            f.write(id_to_node[p[0]] + " " + id_to_node[p[1]] + "\n")
-    return subpath
-
-
-def read_cleaned_pathway(dataset):
-    paths = []
-    with open("data/cleaned_pathways/" + dataset + "-edges.txt", 'r') as f:
-        for line in f:
-            splitted = line.split()
-            if splitted[0] != "#tail" and splitted[1] in nodes and splitted[0] in nodes:
-                paths.append([nodes[splitted[0]], nodes[splitted[1]]])
-    return paths
-
-
 # reading the graph
-_, nodes, graph, id_to_node = reader.read_graph(input_graph, graph_type)
+_, node_to_id, graph, id_to_node = reader.read_graph(input_graph, graph_type)
 if WRITE_NODES_TO_ID_MAP:
-    write_nodes("data/nodes_map.txt", nodes)
+    write_node_to_id("data/node_to_id_map.txt", node_to_id)
 
 # creating the networkx graph
 if RUN_ALGORITHMS or RUN_EDGE_LINKER:
-    G.add_nodes_from(nodes)
+    G.add_nodes_from(node_to_id)
     for e in graph:
         G.add_edge(int(e[1]), int(e[0]), weight=e[2])
 
@@ -293,114 +263,118 @@ if RUN_ALGORITHMS or RUN_EDGE_LINKER:
 
 total_pathway_lengths = 0
 total_pathway_node_lengths = 0
-for data in datas:
-    rtf_path = "data/NetPath/" + data + "-nodes.txt"
-    pathway_path = "data/NetPath/" + data + "-edges.txt"
-    pathlinker = "data/PathLinker_output/" + data + "k-2000-ranked-edges.txt"
 
-    print("Pathway: " + data)
+if JUST_CLEAN:
+    clean_receptors_and_tfs(DATABASE, graph, node_to_id, id_to_node)
+else:
+    pathway_names = read_pathway_names(DATABASE)
+    for pathway_name in pathway_names:
+        pathlinker = "data/PathLinker_output/" + pathway_name + "k-2000-ranked-edges.txt"
 
-    # reading seeds and targets
-    seeds, targets = read_source_and_destinations(rtf_path, nodes)
+        print("Pathway: " + pathway_name)
 
-    # reading pathway
-    if HAS_CLEANED_PATHWAY:
-        subpathway = read_cleaned_pathway(data)
-    else:
-        pathway = read_pathway(pathway_path)
-        subpathway = clean_pathway(pathway, data)
+        # reading seeds and targets
+        seeds, targets = read_source_and_destinations(DATABASE, pathway_name, node_to_id)
 
-    total_pathway_lengths += len(subpathway)
+        # reading pathway
+        if HAS_CLEANED_PATHWAY:
+            subpathway = read_cleaned_pathway(DATABASE, pathway_name, node_to_id)
+        else:
+            pathway = read_pathway(DATABASE, pathway_name, node_to_id)
+            subpathway = clean_pathway(DATABASE, pathway, pathway_name, graph, id_to_node)
 
-    # finding the distances of each node from the targets
-    if RUN_ALGORITHMS or RUN_EDGE_LINKER:
-        length = nx.multi_source_dijkstra_path_length(G, targets)
-        forward_length = nx.multi_source_dijkstra_path_length(forward_G, seeds)
+        total_pathway_lengths += len(subpathway)
 
-    # running the algorithms and get the pathways, true positives, and false positives
-    if INCLUDE_PATHLINKER:
-        pathway_pl, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=pallet[0],
-                                                                            direction=False)
-    else:
-        pl_edge_len = len(graph)
-        pl_recalls = []
-        pl_precisions = []
-        pathway_pl = []
-    pathway_ours, our_recalls, our_precisions = run_algorithm(dataset=data, method="ours", color=pallet[1],
-                                                              alpha=5, c=0.25, k=pl_edge_len, direction=False)
-    if INCLUDE_RWR:
-        pathway_rwr, rwr_recalls, rwr_precisions = run_algorithm(dataset=data, method="rwr", color=pallet[2],
-                                                                 k=pl_edge_len, direction=False)
-    else:
-        rwr_recalls = []
-        rwr_precisions = []
-        pathway_rwr = []
-    if INCLUDE_EDGE_LINKER:
-        pathway_el, el_recalls, el_precisions = run_edge_linker(dataset=data, color=pallet[3], k=pl_edge_len,
-                                                                direction=False)
-    else:
-        el_recalls = []
-        el_precisions = []
-        pathway_el = []
+        # finding the distances of each node from the targets
+        if RUN_ALGORITHMS or RUN_EDGE_LINKER:
+            length = nx.multi_source_dijkstra_path_length(G, targets)
+            forward_length = nx.multi_source_dijkstra_path_length(forward_G, seeds)
+
+        # running the algorithms and get the pathways, true positives, and false positives
+        if INCLUDE_PATHLINKER:
+            pathway_pl, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=pallet[0],
+                                                                                direction=False)
+        else:
+            pl_edge_len = len(graph)
+            pl_recalls = []
+            pl_precisions = []
+            pathway_pl = []
+        pathway_ours, our_recalls, our_precisions = run_algorithm(dataset=pathway_name, method="ours", color=pallet[1],
+                                                                  alpha=5, c=0.25, k=pl_edge_len, direction=False)
+        if INCLUDE_RWR:
+            pathway_rwr, rwr_recalls, rwr_precisions = run_algorithm(dataset=pathway_name, method="rwr",
+                                                                     color=pallet[2], k=pl_edge_len, direction=False)
+        else:
+            rwr_recalls = []
+            rwr_precisions = []
+            pathway_rwr = []
+        if INCLUDE_EDGE_LINKER:
+            pathway_el, el_recalls, el_precisions = run_edge_linker(dataset=pathway_name, color=pallet[3],
+                                                                    k=pl_edge_len, direction=False)
+        else:
+            el_recalls = []
+            el_precisions = []
+            pathway_el = []
+        if PLOT_EDGES_PRC:
+            overall_recalls_ours.append(our_recalls)
+            overall_precisions_ours.append(our_precisions)
+            overall_recalls_pl.append(pl_recalls)
+            overall_precisions_pl.append(pl_precisions)
+            overall_recalls_rwr.append(rwr_recalls)
+            overall_precisions_rwr.append(rwr_precisions)
+            overall_recalls_el.append(el_recalls)
+            overall_precisions_el.append(el_precisions)
+
+            plt.legend()
+            plt.title("recall-precision for " + pathway_name)
+            plt.savefig("output/edge-PRC/" + pathway_name + ".png")
+            plt.close()
+
+        if COMPUTE_RTF:
+            our_seeds, our_targets, rwr_seeds, rwr_targets, pl_seeds, pl_targets, el_seeds, el_targets = \
+                plot_rtf_found(seeds, targets, pathway_ours, pathway_rwr, pathway_pl, pathway_el, pathway_name)
+            overall_r_ours.append(our_seeds)
+            overall_tf_ours.append(our_targets)
+            overall_r_pl.append(pl_seeds)
+            overall_tf_pl.append(pl_targets)
+            overall_r_rwr.append(rwr_seeds)
+            overall_tf_rwr.append(rwr_targets)
+            overall_r_el.append(el_seeds)
+            overall_tf_el.append(el_targets)
+
+        # Node AU-PRC
+        if PLOT_NODES_PRC:
+            our_recalls, our_precisions, rwr_recalls, rwr_precisions, pl_recalls, pl_precisions, el_recalls, \
+                el_precisions, node_len = plot_node_auprc(subpathway, pathway_ours, pathway_rwr, pathway_pl, pathway_el,
+                                                          pathway_name)
+            overall_node_recalls_ours.append(our_recalls)
+            overall_node_precisions_ours.append(our_precisions)
+            overall_node_recalls_pl.append(pl_recalls)
+            overall_node_precisions_pl.append(pl_precisions)
+            overall_node_recalls_rwr.append(rwr_recalls)
+            overall_node_precisions_rwr.append(rwr_precisions)
+            overall_node_recalls_el.append(el_recalls)
+            overall_node_precisions_el.append(el_precisions)
+            total_pathway_node_lengths += node_len
+
     if PLOT_EDGES_PRC:
-        overall_recalls_ours.append(our_recalls)
-        overall_precisions_ours.append(our_precisions)
-        overall_recalls_pl.append(pl_recalls)
-        overall_precisions_pl.append(pl_precisions)
-        overall_recalls_rwr.append(rwr_recalls)
-        overall_precisions_rwr.append(rwr_precisions)
-        overall_recalls_el.append(el_recalls)
-        overall_precisions_el.append(el_precisions)
+        plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
+                       overall_recalls_pl, overall_precisions_pl, overall_recalls_el, overall_precisions_el,
+                       "overall-edge-PRC")
 
-        plt.legend()
-        plt.title("recall-precision for " + data)
-        plt.savefig("output/edge-PRC/" + data + ".png")
-        plt.close()
+    if PLOT_NODES_PRC:
+        plot_total_prc(overall_node_recalls_ours, overall_node_precisions_ours, overall_node_recalls_rwr,
+                       overall_node_precisions_rwr, overall_node_recalls_pl, overall_node_precisions_pl,
+                       overall_node_recalls_el, overall_node_precisions_el, "overall-node-PRC")
 
     if COMPUTE_RTF:
-        our_seeds, our_targets, rwr_seeds, rwr_targets, pl_seeds, pl_targets, el_seeds, el_targets = \
-            plot_rtf_found(seeds, targets, pathway_ours, pathway_rwr, pathway_pl, pathway_el, data)
-        overall_r_ours.append(our_seeds)
-        overall_tf_ours.append(our_targets)
-        overall_r_pl.append(pl_seeds)
-        overall_tf_pl.append(pl_targets)
-        overall_r_rwr.append(rwr_seeds)
-        overall_tf_rwr.append(rwr_targets)
-        overall_r_el.append(el_seeds)
-        overall_tf_el.append(el_targets)
+        plot_total_prc([[(i + 1) for i in range(len(r_ours))] for r_ours in overall_r_ours], overall_r_ours,
+                       [[(i + 1) for i in range(len(r_rwr))] for r_rwr in overall_r_rwr], overall_r_rwr,
+                       [[(i + 1) for i in range(len(r_pl))] for r_pl in overall_r_pl], overall_r_pl,
+                       [[(i + 1) for i in range(len(r_el))] for r_el in overall_r_el], overall_r_el,
+                       "overall-receptors")
 
-    # Node AUPRC
-    if PLOT_NODES_PRC:
-        our_recalls, our_precisions, rwr_recalls, rwr_precisions, pl_recalls, pl_precisions, el_recalls, \
-            el_precisions, node_len = plot_node_auprc(subpathway, pathway_ours, pathway_rwr, pathway_pl, pathway_el,
-                                                      data)
-        overall_node_recalls_ours.append(our_recalls)
-        overall_node_precisions_ours.append(our_precisions)
-        overall_node_recalls_pl.append(pl_recalls)
-        overall_node_precisions_pl.append(pl_precisions)
-        overall_node_recalls_rwr.append(rwr_recalls)
-        overall_node_precisions_rwr.append(rwr_precisions)
-        overall_node_recalls_el.append(el_recalls)
-        overall_node_precisions_el.append(el_precisions)
-        total_pathway_node_lengths += node_len
-
-if PLOT_EDGES_PRC:
-    plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
-                   overall_recalls_pl, overall_precisions_pl, overall_recalls_el, overall_precisions_el,
-                   "overall-edge-PRC")
-
-if PLOT_NODES_PRC:
-    plot_total_prc(overall_node_recalls_ours, overall_node_precisions_ours, overall_node_recalls_rwr,
-                   overall_node_precisions_rwr, overall_node_recalls_pl, overall_node_precisions_pl,
-                   overall_node_recalls_el, overall_node_precisions_el, "overall-node-PRC")
-
-if COMPUTE_RTF:
-    plot_total_prc([[(i + 1) for i in range(len(r_ours))] for r_ours in overall_r_ours], overall_r_ours,
-                   [[(i + 1) for i in range(len(r_rwr))] for r_rwr in overall_r_rwr], overall_r_rwr,
-                   [[(i + 1) for i in range(len(r_pl))] for r_pl in overall_r_pl], overall_r_pl,
-                   [[(i + 1) for i in range(len(r_el))] for r_el in overall_r_el], overall_r_el, "overall-receptors")
-
-    plot_total_prc([[(i + 1) for i in range(len(r_ours))] for r_ours in overall_tf_ours], overall_tf_ours,
-                   [[(i + 1) for i in range(len(r_rwr))] for r_rwr in overall_tf_rwr], overall_tf_rwr,
-                   [[(i + 1) for i in range(len(r_pl))] for r_pl in overall_tf_pl], overall_tf_pl,
-                   [[(i + 1) for i in range(len(r_el))] for r_el in overall_tf_el], overall_tf_el, "overall-tfs")
+        plot_total_prc([[(i + 1) for i in range(len(r_ours))] for r_ours in overall_tf_ours], overall_tf_ours,
+                       [[(i + 1) for i in range(len(r_rwr))] for r_rwr in overall_tf_rwr], overall_tf_rwr,
+                       [[(i + 1) for i in range(len(r_pl))] for r_pl in overall_tf_pl], overall_tf_pl,
+                       [[(i + 1) for i in range(len(r_el))] for r_el in overall_tf_el], overall_tf_el, "overall-tfs")
