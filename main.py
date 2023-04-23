@@ -21,7 +21,7 @@ colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 pallet = [colors['black'], colors['orangered'], colors['grey'], colors['lightgray']]
 # pallet = [colors['navy'], colors['orangered'], colors['dodgerblue'], colors['lightsteelblue']]
 
-input_graph = "data/interactome-weights.txt"
+input_graph = "data/interactome.txt"
 graph_type = "directed"
 
 ''' 
@@ -248,7 +248,7 @@ def run_edge_linker(dataset, color, k=1000000, recall_bound=1.0, direction=True)
 
 
 # reading the graph
-_, node_to_id, graph, id_to_node = reader.read_graph(input_graph, graph_type)
+_, node_to_id, graph, id_to_node, graph_map = reader.read_graph(input_graph, graph_type)
 if WRITE_NODES_TO_ID_MAP:
     write_node_to_id("data/node_to_id_map.txt", node_to_id)
 

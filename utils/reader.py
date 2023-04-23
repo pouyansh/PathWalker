@@ -76,11 +76,19 @@ def read_graph(path, graph_type):
             base of node ids of the graph
     '''
     X = []
+    graph = {}
     with open(path, 'r') as f:
         for row in f:
-            splitted = row.split()
-            if splitted:
-                X.append([splitted[0], splitted[1], float(splitted[2])])
+            sp = row.split()
+            if sp:
+                if sp[0] not in graph:
+                    graph[sp[0]] = []
+                if sp[1] not in graph:
+                    graph[sp[1]] = []
+                if sp[0] not in graph[sp[1]]:
+                    X.append([sp[0], sp[1], float(sp[2])])
+                    graph[sp[0]].append(sp[1])
+                    graph[sp[1]].append(sp[0])
 
     node_to_id = {}
     id_to_node = []
@@ -131,4 +139,4 @@ def read_graph(path, graph_type):
     else:
         raise ValueError('graph_type sould be directed, undirected, or bipartite')
 
-    return A, node_to_id, X, id_to_node
+    return A, node_to_id, X, id_to_node, graph
