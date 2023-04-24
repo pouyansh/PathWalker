@@ -18,7 +18,7 @@ forward_G = nx.Graph()
 
 colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 
-pallet = [colors['black'], colors['orangered'], colors['grey'], colors['lightgray']]
+pallet = [colors['black'], colors['red'], colors['grey'], colors['lightgray'], colors['brown']]
 # pallet = [colors['navy'], colors['orangered'], colors['dodgerblue'], colors['lightsteelblue']]
 
 input_graph = "data/interactome.txt"
@@ -42,11 +42,17 @@ WRITE_EDGES_EDGE_LINKER = True
 WRITE_PRC = True
 WRITE_NODES_TO_ID_MAP = True
 # which methods to include
-INCLUDE_PATHLINKER = False
+INCLUDE_PATHLINKER = True
 INCLUDE_RWR = True
 INCLUDE_EDGE_LINKER = True
+INCLUDE_GROWING_DAGS = False
 # pathway
 HAS_CLEANED_PATHWAY = True
+# direction
+DIRECTION = True
+# algorithm parameters
+ALPHA = 5
+C = 0.25
 
 overall_recalls_ours = []
 overall_precisions_ours = []
@@ -202,11 +208,10 @@ def read_pathlinker_output(path):
     return edges
 
 
-def add_pathlinker(path, color, k=1000000, direction=True):
+def add_pathlinker(path, color, k=1000000, direction=True, name="PathLinker"):
     edges = read_pathlinker_output(path)
     recalls, precisions = compute_recall_precision_pathlinker(edges, subpathway, k, direction)
 
-    name = "PathLinker"
     plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
 
     print("AUPRC of pathlinker: " + str(auc(recalls, precisions)))
@@ -267,9 +272,11 @@ total_pathway_node_lengths = 0
 if JUST_CLEAN:
     clean_receptors_and_tfs(DATABASE, node_to_id, id_to_node, graph_map)
 else:
-    pathway_names = read_pathway_names(DATABASE, cleaned=True)
+    # pathway_names = read_pathway_names(DATABASE, cleaned=True)
+    pathway_names = ["hsa04310"]
     for pathway_name in pathway_names:
         pathlinker = "data/PathLinker_output/" + pathway_name + "k-2000-ranked-edges.txt"
+        growingDAGs = "data/GrowingDAGs_output/" + pathway_name + "-edges.txt"
 
         print("Pathway: " + pathway_name)
 
@@ -290,27 +297,36 @@ else:
             length = nx.multi_source_dijkstra_path_length(G, targets)
             forward_length = nx.multi_source_dijkstra_path_length(forward_G, seeds)
 
+        edge_len = [100000]
         # running the algorithms and get the pathways, true positives, and false positives
+        if INCLUDE_GROWING_DAGS:
+            pathway_gd, gd_edge_len, gd_recalls, gd_precisions = add_pathlinker(growingDAGs, color=pallet[4],
+                                                                                direction=DIRECTION, name="GrowingDAGs")
+            edge_len[0] = gd_edge_len
         if INCLUDE_PATHLINKER:
             pathway_pl, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=pallet[0],
-                                                                                direction=True)
+                                                                                direction=DIRECTION, k=edge_len[0])
+            if not INCLUDE_GROWING_DAGS:
+                edge_len[0] = pl_edge_len
+
         else:
-            pl_edge_len = 100000
             pl_recalls = []
             pl_precisions = []
             pathway_pl = []
+
         pathway_ours, our_recalls, our_precisions = run_algorithm(dataset=pathway_name, method="ours", color=pallet[1],
-                                                                  alpha=5, c=0.25, k=pl_edge_len, direction=True)
+                                                                  alpha=ALPHA, c=C, k=edge_len[0], direction=DIRECTION)
         if INCLUDE_RWR:
             pathway_rwr, rwr_recalls, rwr_precisions = run_algorithm(dataset=pathway_name, method="rwr",
-                                                                     color=pallet[2], k=pl_edge_len, direction=True)
+                                                                     color=pallet[2], k=edge_len[0],
+                                                                     direction=DIRECTION)
         else:
             rwr_recalls = []
             rwr_precisions = []
             pathway_rwr = []
         if INCLUDE_EDGE_LINKER:
             pathway_el, el_recalls, el_precisions = run_edge_linker(dataset=pathway_name, color=pallet[3],
-                                                                    k=pl_edge_len, direction=True)
+                                                                    k=edge_len[0], direction=DIRECTION)
         else:
             el_recalls = []
             el_precisions = []
