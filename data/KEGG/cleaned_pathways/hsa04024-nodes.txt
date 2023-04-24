@@ -54,6 +54,7 @@ P48436	tf
 P55196	tf
 Q02930	tf
 Q07869	tf
+Q13464	tf
 Q68CJ9	tf
 Q70SY1	tf
 Q8TEY5	tf
@@ -66,6 +67,9 @@ P13637	none
 P14415	none
 P50993	none
 P54709	none
+P54710	none
+Q13733	none
+Q9UN42	none
 O00329	none
 P31749	none
 P31751	none
@@ -105,11 +109,13 @@ Q8TDS4	none
 P04049	none
 P36507	none
 Q02750	none
+P05305	none
 P63092	none
 P09681	none
 O14939	none
 Q13393	none
 Q9P212	none
+P14138	none
 P15056	none
 P15153	none
 Q13153	none
@@ -160,7 +166,6 @@ P36873	none
 P42336	none
 P42338	none
 P52735	none
-P54710	none
 Q13009	none
 Q8WWN8	none
 Q92569	none
@@ -171,10 +176,8 @@ P62140	none
 Q13554	none
 Q13555	none
 Q13557	none
-Q13733	none
 Q16566	none
 Q8TD86	none
 Q9NZT1	none
 Q9UBU3	none
-Q9UN42	none
 Q9UQM7	none

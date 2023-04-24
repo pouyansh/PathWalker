@@ -1,0 +1,14 @@
+#node	node_symbol
+P31785	receptor
+Q01113	receptor
+P40763	tf
+P42224	tf
+Q92993	tf
+P35568	none
+P62993	none
+Q9Y4H2	none
+P15248	none
+P52333	none
+P55072	none
+P23458	none
+P27986	none

@@ -8,6 +8,8 @@ P42771	tf
 Q00987	tf
 Q13315	tf
 Q13535	tf
+O15304	none
+Q07817	none
 Q07812	none
 P17936	none
 P05019	none

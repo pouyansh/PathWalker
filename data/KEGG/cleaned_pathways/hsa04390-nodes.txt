@@ -22,6 +22,7 @@ P18075	tf
 P22003	tf
 P30153	tf
 P35222	tf
+P36402	tf
 P36894	tf
 P67775	tf
 P84022	tf
@@ -69,6 +70,8 @@ Q8IX03	none
 P41221	none
 P41743	none
 Q9BYG4	none
+Q9BYG5	none
+Q9NPB6	none
 P43026	none
 P48730	none
 P49674	none
@@ -84,15 +87,13 @@ P82279	none
 Q5IJ48	none
 Q00005	none
 Q05513	none
-Q9BYG5	none
-Q9NPB6	none
 Q14160	none
+Q8N3R9	none
 Q66LE6	none
 Q6KF10	none
 Q6ZTQ3	none
 Q7Z4P5	none
 Q7Z5Y6	none
-Q8N3R9	none
 Q8TEW0	none
 Q93097	none
 Q96IF1	none

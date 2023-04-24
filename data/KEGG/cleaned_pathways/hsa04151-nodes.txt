@@ -163,6 +163,7 @@ P36888	none
 P42345	none
 Q13541	none
 Q8N122	none
+Q9BVC4	none
 P43405	none
 P49746	none
 P49747	none
@@ -186,6 +187,7 @@ P61981	none
 P62258	none
 P62714	none
 Q07889	none
+Q07890	none
 P63104	none
 P63151	none
 P78509	none
@@ -193,7 +195,6 @@ Q00005	none
 Q01955	none
 Q04917	none
 Q06190	none
-Q07890	none
 Q13131	none
 Q13362	none
 A6NMX2	none
@@ -205,7 +206,6 @@ Q14031	none
 Q14738	none
 Q15172	none
 Q15173	none
-Q9BVC4	none
 Q15389	none
 Q15831	none
 Q16363	none

@@ -295,7 +295,7 @@ else:
             pathway_pl, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=pallet[0],
                                                                                 direction=True)
         else:
-            pl_edge_len = 40000
+            pl_edge_len = 100000
             pl_recalls = []
             pl_precisions = []
             pathway_pl = []

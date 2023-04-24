@@ -101,6 +101,7 @@ P15018	none
 P15248	none
 P20809	none
 P22301	none
+Q6UWB1	none
 P26441	none
 P29350	none
 P29459	none
@@ -117,7 +118,6 @@ Q07889	none
 Q07890	none
 Q13007	none
 Q16619	none
-Q6UWB1	none
 Q86WN2	none
 Q8IU54	none
 Q8IZI9	none

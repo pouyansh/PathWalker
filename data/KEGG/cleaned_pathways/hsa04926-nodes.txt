@@ -26,6 +26,7 @@ Q99941	tf
 O14610	none
 O00329	none
 O00459	none
+O95467	none
 P04899	none
 P08754	none
 P27986	none
@@ -45,11 +46,11 @@ P53779	none
 O14775	none
 O15264	none
 O60262	none
-O95467	none
 O43306	none
 O60266	none
 O60503	none
 O95622	none
+P16520	none
 P40145	none
 P50150	none
 P50151	none
@@ -64,6 +65,8 @@ P63218	none
 Q08462	none
 Q08828	none
 Q8NFM4	none
+Q9HAV0	none
+Q9P2W3	none
 Q9UBI6	none
 Q9UK08	none
 P62993	none
@@ -74,12 +77,15 @@ P01116	none
 P36507	none
 Q02750	none
 P09471	none
-P16520	none
+P12931	none
+P29353	none
+P98077	none
+Q6S5L8	none
+Q92529	none
 P17252	none
 P17612	none
 P22612	none
 P22694	none
-P29353	none
 Q07889	none
 Q07890	none
 P30679	none
@@ -89,7 +95,4 @@ P31751	none
 P45985	none
 P53778	none
 Q15759	none
-Q6S5L8	none
-Q9HAV0	none
-Q9P2W3	none
 Q9Y243	none

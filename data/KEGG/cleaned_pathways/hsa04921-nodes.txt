@@ -58,6 +58,8 @@ P28907	none
 P05771	none
 P08754	none
 P09471	none
+P60709	none
+P63261	none
 P16298	none
 P17252	none
 P0C869	none
@@ -78,6 +80,7 @@ Q16566	none
 Q32MK0	none
 Q86YV6	none
 Q8IU85	none
+Q96LZ3	none
 Q96NX5	none
 Q96RR4	none
 Q9H1R3	none
@@ -108,14 +111,11 @@ P48050	none
 P63252	none
 Q14500	none
 Q9UNX9	none
-P60709	none
 P63092	none
 P63096	none
-P63261	none
 Q13163	none
 P29474	none
 Q8TD86	none
-Q96LZ3	none
 O43741	none
 P54619	none
 P54646	none

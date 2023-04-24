@@ -18,13 +18,14 @@ P07948	none
 P12931	none
 P45983	none
 P45984	none
+P53779	none
 P57087	none
 Q07157	none
 P78536	none
 Q99075	none
 Q9BX67	none
+Q9Y624	none
 Q13153	none
 P45985	none
 Q99558	none
 Q9Y239	none
-Q9Y624	none

@@ -1,4 +1,5 @@
 #node	node_symbol
+P00533	receptor
 P30968	receptor
 P05412	tf
 P18146	tf
@@ -13,11 +14,14 @@ O14733	none
 P45983	none
 P45984	none
 P53779	none
-O43555	none
-O95467	none
 O43306	none
+P17612	none
+P22612	none
+P22694	none
+O43555	none
 O60266	none
 O60503	none
+O95467	none
 O95622	none
 P40145	none
 P51828	none
@@ -47,9 +51,6 @@ Q9UP65	none
 Q9Y2U5	none
 Q9Y6R4	none
 P17252	none
-P17612	none
-P22612	none
-P22694	none
 P27482	none
 Q13554	none
 Q13555	none
@@ -72,6 +73,7 @@ P52564	none
 P60953	none
 P62993	none
 Q07889	none
-Q05655	none
 Q07890	none
+Q05655	none
+Q8TD86	none
 Q9NZT1	none

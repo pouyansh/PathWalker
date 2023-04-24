@@ -10,9 +10,9 @@ P15153	none
 P31749	none
 P31751	none
 P60763	none
+P63000	none
 Q9Y243	none
 O00459	none
-P63000	none
 O15264	none
 P49137	none
 Q16644	none

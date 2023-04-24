@@ -47,6 +47,7 @@ P42338	none
 P98077	none
 Q6S5L8	none
 Q92529	none
+Q92569	none
 P01111	none
 P04049	none
 P01112	none
@@ -59,7 +60,6 @@ P48549	none
 Q92806	none
 P08253	none
 P14780	none
-Q92569	none
 P17612	none
 P22612	none
 P22694	none
@@ -67,8 +67,10 @@ P27482	none
 P29474	none
 P62993	none
 Q07889	none
+Q07890	none
 P63092	none
 Q05655	none
-Q07890	none
 P50148	none
+Q8TD86	none
 Q99527	none
+Q9NZT1	none

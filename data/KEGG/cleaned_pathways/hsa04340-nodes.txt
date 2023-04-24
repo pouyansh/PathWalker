@@ -1,7 +1,9 @@
 #node	node_symbol
 P98164	receptor
 Q13635	receptor
+Q4KMG0	receptor
 Q99835	receptor
+Q9BWV1	receptor
 Q9Y6C5	receptor
 P08151	tf
 P10070	tf
@@ -11,9 +13,11 @@ Q13616	tf
 Q13618	tf
 Q13635	tf
 Q15465	tf
+Q9HAU4	tf
 Q9UMX1	tf
 O43323	none
 O43791	none
+Q2M1P5	none
 P17612	none
 P48729	none
 P49841	none
@@ -23,7 +27,7 @@ P25098	none
 P32121	none
 Q9Y496	none
 Q9UKB1	none
-Q14623	none
-Q2M1P5	none
-Q96QV1	none
 Q9Y297	none
+Q14623	none
+Q96QV1	none
+Q9HCE7	none

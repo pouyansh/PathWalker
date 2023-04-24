@@ -1,5 +1,7 @@
 #node	node_symbol
 O14920	tf
+P19838	tf
 P25963	tf
+Q04206	tf
 O43318	none
 Q8N5C8	none

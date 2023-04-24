@@ -1,0 +1,8 @@
+#node	node_symbol
+P16871	receptor
+O60674	tf
+P42229	tf
+P51692	tf
+Q9HC73	none
+Q969D9	none
+P23458	none

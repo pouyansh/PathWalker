@@ -35,8 +35,8 @@ Q9Y6K9	tf
 O00329	none
 P15153	none
 P60763	none
-O00459	none
 P63000	none
+O00459	none
 O14610	none
 O14827	none
 Q13972	none
@@ -178,11 +178,12 @@ P52797	none
 P52798	none
 P52803	none
 P55075	none
-P48023	none
 Q06124	none
+Q13480	none
+Q9UQC2	none
+P48023	none
 Q07889	none
 Q07890	none
-Q13480	none
 P20339	none
 P42684	none
 P51148	none
@@ -214,6 +215,5 @@ Q9NS23	none
 Q9NSA1	none
 Q9NZT1	none
 Q9UJF2	none
-Q9UQC2	none
 Q9Y243	none
 Q9Y264	none

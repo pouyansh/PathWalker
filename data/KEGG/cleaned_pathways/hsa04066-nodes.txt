@@ -33,8 +33,10 @@ P36507	none
 P42336	none
 P42338	none
 Q02750	none
-P01308	none
 Q92569	none
+P01308	none
+P01579	none
+P38484	none
 P05019	none
 P05129	none
 P05231	none
@@ -45,7 +47,6 @@ P62753	none
 Q9BUB5	none
 Q9HBH9	none
 P42345	none
-P38484	none
 P62877	none
 Q13541	none
 A6NMX2	none

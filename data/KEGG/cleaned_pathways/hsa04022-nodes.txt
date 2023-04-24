@@ -77,6 +77,7 @@ Q9Y210	none
 P16298	none
 P16615	none
 P23582	none
+Q93084	none
 P27482	none
 Q15746	none
 Q32MK0	none
@@ -132,7 +133,6 @@ Q9Y691	none
 Q9Y6F6	none
 Q13976	none
 Q8TD86	none
-Q93084	none
 Q96LZ3	none
 Q9NZT1	none
 Q9Y4H2	none

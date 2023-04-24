@@ -4,9 +4,12 @@ O00459	none
 O15357	none
 P16885	none
 P19174	none
+Q92835	none
+O14732	none
+P29218	none
+O14986	none
+Q9BTU6	none
 O15056	none
 P27986	none
 Q13574	none
-P29218	none
-O14732	none
 Q92569	none

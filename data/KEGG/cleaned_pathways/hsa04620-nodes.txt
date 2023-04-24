@@ -47,7 +47,10 @@ P45985	none
 P46734	none
 P53778	none
 Q15759	none
+P51617	none
+Q9NWZ3	none
 P52564	none
+Q92569	none
 Q13114	none
 Q14164	none
 Q9UHD2	none
@@ -58,9 +61,6 @@ Q9Y4K3	none
 Q15750	none
 Q9NYJ8	none
 Q8IUC6	none
-Q92569	none
 Q9NR96	none
 Q9NR97	none
-Q9NWZ3	none
-P51617	none
 O43318	none

@@ -1,8 +1,10 @@
 #node	node_symbol
+P35414	receptor
 P36897	receptor
 Q9UM47	receptor
 P27361	tf
 P28482	tf
+P56524	tf
 P84022	tf
 Q13485	tf
 Q15796	tf
@@ -48,15 +50,16 @@ P23443	none
 P62753	none
 P27482	none
 P29474	none
+P29475	none
 P35228	none
 Q15746	none
 Q32MK0	none
 Q86YV6	none
 Q9H1R3	none
 P31749	none
+P42345	none
 Q13370	none
 P31751	none
-P42345	none
 Q9UBS0	none
 Q9Y243	none
 P50148	none
@@ -82,3 +85,4 @@ Q9NZT1	none
 Q9P2W3	none
 Q9UBI6	none
 Q9UK08	none
+Q9ULZ1	none

@@ -30,6 +30,8 @@ Q16822	none
 Q9BUM1	none
 Q9NQR9	none
 Q06124	none
+P01375	none
+P19438	none
 Q12933	none
 P01189	none
 P41159	none

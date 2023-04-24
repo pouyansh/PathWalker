@@ -22,6 +22,7 @@ Q9UM47	tf
 Q9Y618	tf
 O00548	none
 O00587	none
+P0C7T5	none
 Q8N9I9	none
 Q8TDB6	none
 Q9Y2E6	none

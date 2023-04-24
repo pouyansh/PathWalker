@@ -25,12 +25,15 @@ P30153	tf
 P36894	tf
 P67775	tf
 P84022	tf
+Q13464	tf
 Q13485	tf
 Q13616	tf
 Q14186	tf
+Q15583	tf
 Q15796	tf
 Q15797	tf
 Q99717	tf
+Q9GZN2	tf
 Q9HAU4	tf
 O00238	none
 O00292	none
@@ -59,8 +62,10 @@ P30154	none
 P34820	none
 P62714	none
 P43026	none
+P61586	none
 P62877	none
 P63208	none
+Q06828	none
 Q13145	none
 Q13253	none
 Q6KF10	none

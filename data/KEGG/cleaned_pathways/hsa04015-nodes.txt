@@ -88,7 +88,10 @@ Q08828	none
 Q8NFM4	none
 O95750	none
 P46109	none
+Q00722	none
+Q01970	none
 Q15147	none
+Q9NQ66	none
 P01111	none
 P04049	none
 P15056	none
@@ -107,9 +110,6 @@ Q15139	none
 Q9BZL6	none
 P05230	none
 P05771	none
-Q00722	none
-Q01970	none
-Q9NQ66	none
 P07737	none
 P60709	none
 P63261	none
@@ -176,6 +176,7 @@ Q8TEU7	none
 Q9Y4G8	none
 Q7LDG7	none
 Q8NHR9	none
+Q9UI08	none
 Q9Y490	none
 Q9Y4G6	none
 Q8IV61	none

@@ -65,9 +65,12 @@ P13861	none
 P06737	none
 P11216	none
 P11217	none
+P17081	none
+Q9UPT5	none
 P17612	none
 P18031	none
 P22612	none
+Q13905	none
 P22694	none
 P62753	none
 Q9BUB5	none
@@ -75,6 +78,7 @@ Q9HBH9	none
 P31321	none
 P31323	none
 P14672	none
+P36873	none
 P49841	none
 P62136	none
 P62140	none
@@ -84,7 +88,6 @@ Q6ZSY5	none
 Q86XI6	none
 Q92934	none
 Q9H7J1	none
-P36873	none
 Q9UQK1	none
 P19367	none
 P30613	none
@@ -97,6 +100,7 @@ Q13541	none
 P45983	none
 P45984	none
 Q15382	none
+Q92574	none
 P53779	none
 P54619	none
 P54646	none
@@ -104,14 +108,10 @@ Q07889	none
 Q07890	none
 Q13131	none
 Q13191	none
-Q13905	none
 Q14254	none
-Q92574	none
 A6NMX2	none
 O60573	none
 P06730	none
 Q9UGI9	none
 Q9UGJ0	none
-Q9UPT5	none
-P17081	none
 Q9Y478	none
