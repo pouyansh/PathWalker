@@ -1,10 +1,6 @@
 #node	node_symbol
 P35968	receptor
-P27361	tf
-P28482	tf
-P63098	tf
 Q13469	tf
-Q16539	tf
 O00329	none
 P15153	none
 P31749	none
@@ -39,6 +35,7 @@ P17252	none
 P29474	none
 P47712	none
 P48454	none
+P63098	none
 Q08209	none
 Q3MJ16	none
 Q68DD2	none
@@ -47,9 +44,12 @@ Q96LZ3	none
 Q9NP31	none
 Q9UP65	none
 P19174	none
+P27361	none
+P28482	none
 P55211	none
 Q92934	none
 P04792	none
 P53778	none
 P60953	none
 Q15759	none
+Q16539	none

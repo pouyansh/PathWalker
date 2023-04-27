@@ -8,19 +8,9 @@ P30542	receptor
 P41143	receptor
 Q99500	receptor
 Q9H228	receptor
-O75116	tf
-P04637	tf
-P10415	tf
-P19838	tf
-P27361	tf
-P28482	tf
-P30153	tf
-P60484	tf
-P67775	tf
 Q04206	tf
-Q13464	tf
-Q16539	tf
-Q9Y5P8	tf
+P19838	tf
+P04637	tf
 O00329	none
 P15153	none
 P60763	none
@@ -35,6 +25,8 @@ P31751	none
 Q07812	none
 Q9Y243	none
 O15530	none
+O75116	none
+P60484	none
 P04899	none
 P08754	none
 P63096	none
@@ -48,6 +40,7 @@ P01375	none
 P19438	none
 P36507	none
 Q02750	none
+P10415	none
 P27986	none
 P42336	none
 P42338	none
@@ -60,6 +53,9 @@ P06241	none
 P30273	none
 Q01362	none
 Q9UQC2	none
+P27361	none
+P28482	none
+P30153	none
 P30154	none
 P29474	none
 P45983	none
@@ -68,8 +64,10 @@ P53778	none
 P53779	none
 P55957	none
 P61586	none
+Q13464	none
 P62714	none
 P63151	none
+P67775	none
 Q00005	none
 Q02156	none
 Q05513	none
@@ -83,6 +81,7 @@ Q15628	none
 Q12933	none
 Q15759	none
 Q16537	none
+Q16539	none
 Q66LE6	none
 Q92636	none
 O60906	none
@@ -90,3 +89,4 @@ Q969Q6	none
 P50148	none
 Q99683	none
 Q9Y2T4	none
+Q9Y5P8	none

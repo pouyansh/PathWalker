@@ -1,17 +1,16 @@
 #node	node_symbol
 P28347	tf
-Q15561	tf
 Q15562	tf
-Q99594	tf
-Q9GZV5	tf
-Q9UGP4	tf
+Q15561	tf
 A6NIX2	none
 O95835	none
 Q9H4B6	none
 Q9NRM7	none
 P46937	none
+Q9GZV5	none
 P35240	none
 Q8IX03	none
+Q99594	none
 P50749	none
 Q13188	none
 Q7L9L4	none
@@ -19,3 +18,4 @@ Q9H8S9	none
 Q96IF1	none
 Q9H2L5	none
 Q9NS23	none
+Q9UGP4	none

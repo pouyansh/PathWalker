@@ -6,17 +6,15 @@ P36941	receptor
 Q96RJ3	receptor
 Q9HAV5	receptor
 Q9Y6Q6	receptor
-O14920	tf
-P19838	tf
-P25963	tf
 Q04206	tf
-Q14258	tf
-Q9Y6K9	tf
+P19838	tf
 O00463	none
 Q12933	none
 Q99558	none
 O14788	none
+O14920	none
 O15111	none
+Q9Y6K9	none
 O43318	none
 O43557	none
 O95786	none
@@ -32,6 +30,7 @@ P08571	none
 Q13546	none
 Q15628	none
 P19784	none
+P25963	none
 P29965	none
 P43403	none
 O43561	none
@@ -47,6 +46,7 @@ Q8WV28	none
 Q13114	none
 Q13489	none
 Q13490	none
+Q14258	none
 Q86XR7	none
 Q8IUC6	none
 Q8WWZ3	none

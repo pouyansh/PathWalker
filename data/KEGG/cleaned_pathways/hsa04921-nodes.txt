@@ -3,16 +3,10 @@ P00533	receptor
 P16066	receptor
 P20594	receptor
 P30559	receptor
-O75116	tf
 O95644	tf
-P27361	tf
-P28482	tf
-P63098	tf
-Q12968	tf
-Q13164	tf
-Q13464	tf
 Q13469	tf
 Q14934	tf
+Q12968	tf
 O00418	none
 P13639	none
 O14974	none
@@ -20,6 +14,7 @@ P14649	none
 P24844	none
 P60660	none
 O60237	none
+O75116	none
 P36873	none
 P62136	none
 P62140	none
@@ -34,6 +29,8 @@ P51828	none
 Q08462	none
 Q08828	none
 Q8NFM4	none
+P27361	none
+P28482	none
 P01111	none
 P04049	none
 P01112	none
@@ -70,6 +67,7 @@ Q86XP0	none
 Q9UP65	none
 P27482	none
 P48454	none
+P63098	none
 Q08209	none
 Q13554	none
 Q13555	none
@@ -114,6 +112,8 @@ Q9UNX9	none
 P63092	none
 P63096	none
 Q13163	none
+Q13164	none
+Q13464	none
 P29474	none
 Q8TD86	none
 O43741	none

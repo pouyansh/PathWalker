@@ -2,9 +2,6 @@
 P21554	receptor
 P41594	receptor
 Q13255	receptor
-P27361	tf
-P28482	tf
-Q16539	tf
 O14610	none
 O00555	none
 O15264	none
@@ -12,6 +9,8 @@ O43306	none
 O60266	none
 O60503	none
 O95622	none
+P27361	none
+P28482	none
 P40145	none
 P45983	none
 P45984	none
@@ -25,6 +24,7 @@ Q00975	none
 Q08462	none
 Q08828	none
 Q15759	none
+Q16539	none
 Q8NFM4	none
 Q92806	none
 O14775	none

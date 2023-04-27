@@ -37,12 +37,12 @@ PLOT_EDGES_PRC = True
 PLOT_NODES_PRC = True
 COMPUTE_RTF = True
 # writing methods
-WRITE_EDGES = True
-WRITE_EDGES_EDGE_LINKER = True
+WRITE_EDGES = False
+WRITE_EDGES_EDGE_LINKER = False
 WRITE_PRC = True
 WRITE_NODES_TO_ID_MAP = True
 # which methods to include
-INCLUDE_PATHLINKER = True
+INCLUDE_PATHLINKER = False
 INCLUDE_RWR = True
 INCLUDE_EDGE_LINKER = True
 INCLUDE_GROWING_DAGS = False
@@ -272,8 +272,8 @@ total_pathway_node_lengths = 0
 if JUST_CLEAN:
     clean_receptors_and_tfs(DATABASE, node_to_id, id_to_node, graph_map)
 else:
-    # pathway_names = read_pathway_names(DATABASE, cleaned=True)
-    pathway_names = ["hsa04310"]
+    pathway_names = read_pathway_names(DATABASE, cleaned=True)
+    # pathway_names = ["hsa04310"]
     for pathway_name in pathway_names:
         pathlinker = "data/PathLinker_output/" + pathway_name + "k-2000-ranked-edges.txt"
         growingDAGs = "data/GrowingDAGs_output/" + pathway_name + "-edges.txt"

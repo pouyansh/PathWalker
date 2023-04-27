@@ -53,11 +53,6 @@ Q15303	receptor
 Q9NPC1	receptor
 Q9NS75	receptor
 Q9Y271	receptor
-P04626	tf
-P07550	tf
-P43115	tf
-P63098	tf
-Q15303	tf
 O14958	none
 Q13061	none
 O60266	none
@@ -103,6 +98,7 @@ P46019	none
 P46020	none
 P48454	none
 P54750	none
+P63098	none
 Q01064	none
 Q08209	none
 Q13554	none
@@ -124,6 +120,7 @@ Q9UQM7	none
 P32239	none
 P34969	none
 P35348	none
+P43115	none
 Q13586	none
 Q96D31	none
 Q96SN7	none

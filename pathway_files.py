@@ -98,7 +98,7 @@ def read_raw_source_and_destinations(node_to_id):
         for line in f:
             if line.split() and line.split()[0] in node_to_id:
                 receptors.append(node_to_id[line.split()[0]])
-    with open("data/KEGG/transcription-factors/TFcheckpoint/all-tfs.txt", 'r') as f:
+    with open("data/KEGG/transcription-factors/TFcheckpoint/db-tfs.txt", 'r') as f:
         for line in f:
             if line.split() and line.split()[0] in node_to_id:
                 tfs.append(node_to_id[line.split()[0]])

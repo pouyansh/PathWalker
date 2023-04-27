@@ -2,14 +2,9 @@
 P35414	receptor
 P36897	receptor
 Q9UM47	receptor
-P27361	tf
-P28482	tf
-P56524	tf
-P84022	tf
 Q13485	tf
+P84022	tf
 Q15796	tf
-Q9UM47	tf
-Q9UQL6	tf
 A8MW95	none
 Q8NEB9	none
 O14610	none
@@ -56,10 +51,12 @@ Q15746	none
 Q32MK0	none
 Q86YV6	none
 Q9H1R3	none
+P28482	none
 P31749	none
 P42345	none
 Q13370	none
 P31751	none
+P27361	none
 Q9UBS0	none
 Q9Y243	none
 P50148	none
@@ -79,6 +76,8 @@ Q14457	none
 Q99570	none
 P10916	none
 Q16566	none
+P56524	none
+Q9UQL6	none
 Q8TD86	none
 Q9HAV0	none
 Q9NZT1	none

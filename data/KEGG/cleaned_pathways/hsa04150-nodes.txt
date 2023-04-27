@@ -11,17 +11,11 @@ Q9H461	receptor
 Q9NPG1	receptor
 Q9ULW2	receptor
 Q9UP38	receptor
-O14640	tf
-O14641	tf
-O14920	tf
-O75140	tf
-P06213	tf
-P27361	tf
-P28482	tf
-Q92997	tf
 A6NHX0	none
 Q8WTX7	none
+O14640	none
 P49841	none
+O14641	none
 O15530	none
 P31749	none
 P31751	none
@@ -29,6 +23,7 @@ Q9Y243	none
 O43156	none
 Q9Y4R8	none
 O60353	none
+O75140	none
 Q5VZM2	none
 Q7L523	none
 Q9ULV1	none
@@ -48,6 +43,7 @@ Q01650	none
 P15313	none
 Q6IAA8	none
 P19438	none
+O14920	none
 P21281	none
 Q9Y2Q5	none
 P21283	none
@@ -55,10 +51,12 @@ O43504	none
 P23443	none
 P23588	none
 P62753	none
+P27361	none
 P51812	none
 Q15349	none
 Q15418	none
 Q9UK32	none
+P28482	none
 O15111	none
 O00329	none
 O00459	none
@@ -100,6 +98,7 @@ Q0VGL1	none
 Q8NFG4	none
 Q8TF40	none
 Q9P278	none
+Q92997	none
 Q96B36	none
 Q8N122	none
 Q96EE3	none
