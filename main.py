@@ -1,4 +1,5 @@
 import math
+import random
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,8 +30,8 @@ These are some boolean variables that define what do we expect from the code
 '''
 DATABASE = "KEGG"
 # methods to run
-RUN_ALGORITHMS = True
-RUN_EDGE_LINKER = True
+RUN_ALGORITHMS = False
+RUN_EDGE_LINKER = False
 JUST_CLEAN = False
 # output
 PLOT_EDGES_PRC = True
@@ -39,17 +40,17 @@ COMPUTE_RTF = True
 # writing methods
 WRITE_EDGES = False
 WRITE_EDGES_EDGE_LINKER = False
-WRITE_PRC = True
-WRITE_NODES_TO_ID_MAP = True
+WRITE_PRC = False
+WRITE_NODES_TO_ID_MAP = False
 # which methods to include
-INCLUDE_PATHLINKER = False
+INCLUDE_PATHLINKER = True
 INCLUDE_RWR = True
 INCLUDE_EDGE_LINKER = True
 INCLUDE_GROWING_DAGS = False
 # pathway
 HAS_CLEANED_PATHWAY = True
 # direction
-DIRECTION = True
+DIRECTION = False
 # algorithm parameters
 ALPHA = 5
 C = 0.25
@@ -99,21 +100,29 @@ def compute_new_graph(method, alpha=0.0):
         return np.array([[int(edge[0]), int(edge[1]), math.pow(2, -float(edge[2]))] for edge in graph])
 
 
-def compute_recall_precision(sorted_edges, known_pathway, k, direction, recall_bound=1.0):
+def compute_recall_precision(sorted_edges, known_pathway, k, direction, recall_bound=1.0, sub_samples=None):
+    if sub_samples is None:
+        sub_samples = []
     recalls = []
     precisions = []
     tp = 0
     fp = 0
     for i in range(min(k, len(sorted_edges))):
         edge = sorted_edges[i]
-        if [edge[0][0], edge[0][1]] in known_pathway or (not direction and [edge[0][1], edge[0][0]] in known_pathway):
-            tp += 1
+        if sub_samples and [edge[0][0], edge[0][1]] in sub_samples:
+            check = True
         else:
-            fp += 1
-        recalls.append(tp / len(known_pathway))
-        precisions.append(tp / (tp + fp))
-        if recalls[-1] > recall_bound:
-            break
+            check = True
+        if check:
+            if [edge[0][0], edge[0][1]] in known_pathway or (
+                    not direction and [edge[0][1], edge[0][0]] in known_pathway):
+                tp += 1
+            else:
+                fp += 1
+            recalls.append(tp / len(known_pathway))
+            precisions.append(tp / (tp + fp))
+            if recalls[-1] > recall_bound:
+                break
     return recalls, precisions
 
 
@@ -132,7 +141,8 @@ def run_random_walk(new_graph, c=0.15):
     return ppr.compute(seeds, c=c, max_iters=1000)
 
 
-def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_bound=1.0, direction=True):
+def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_bound=1.0, direction=True,
+                  sub_samples=None):
     if RUN_ALGORITHMS:
         new_graph = compute_new_graph(method, alpha)
         # creating the graph using the new weights
@@ -162,7 +172,8 @@ def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_b
     if PLOT_EDGES_PRC:
         # computing the precision and recall
         print("computing recall-precision curve for " + method)
-        recalls, precisions = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound)
+        recalls, precisions = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound,
+                                                       sub_samples=sub_samples)
         if WRITE_PRC:
             write_precision_recall(precisions, recalls, "results/" + dataset + "PR-" + method + ".txt")
 
@@ -174,7 +185,9 @@ def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_b
     return result, recalls, precisions
 
 
-def compute_recall_precision_pathlinker(sorted_edges, known_pathway, k, direction, recall_bound=1.0):
+def compute_recall_precision_pathlinker(sorted_edges, known_pathway, k, direction, recall_bound=1.0, sub_samples=None):
+    if sub_samples is None:
+        sub_samples = []
     recalls = []
     precisions = []
     tp = 0
@@ -184,11 +197,16 @@ def compute_recall_precision_pathlinker(sorted_edges, known_pathway, k, directio
         ksp = sorted_edges[counter][2]
         while counter < len(sorted_edges) and sorted_edges[counter][2] == ksp:
             edge = sorted_edges[counter]
-            if [edge[0], edge[1]] in known_pathway or (not direction and [edge[1], edge[0]] in known_pathway):
-                tp += 1
+            if sub_samples and [edge[0], edge[1]] in sub_samples:
+                check = True
             else:
-                fp += 1
-            counter += 1
+                check = True
+            if check:
+                if [edge[0], edge[1]] in known_pathway or (not direction and [edge[1], edge[0]] in known_pathway):
+                    tp += 1
+                else:
+                    fp += 1
+                counter += 1
         recalls.append(tp / len(known_pathway))
         precisions.append(tp / (tp + fp))
         if recalls[-1] > recall_bound:
@@ -208,9 +226,9 @@ def read_pathlinker_output(path):
     return edges
 
 
-def add_pathlinker(path, color, k=1000000, direction=True, name="PathLinker"):
+def add_pathlinker(path, color, k=1000000, direction=True, name="PathLinker", sub_samples=None):
     edges = read_pathlinker_output(path)
-    recalls, precisions = compute_recall_precision_pathlinker(edges, subpathway, k, direction)
+    recalls, precisions = compute_recall_precision_pathlinker(edges, subpathway, k, direction, sub_samples=sub_samples)
 
     plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
 
@@ -220,7 +238,7 @@ def add_pathlinker(path, color, k=1000000, direction=True, name="PathLinker"):
     return [[edges[i][0], edges[i][1]] for i in range(min(k, len(edges)))], len(edges), recalls, precisions
 
 
-def run_edge_linker(dataset, color, k=1000000, recall_bound=1.0, direction=True):
+def run_edge_linker(dataset, color, k=1000000, recall_bound=1.0, direction=True, sub_samples=None):
     if RUN_EDGE_LINKER:
         new_graph = compute_new_graph("edge_linker")
 
@@ -241,7 +259,8 @@ def run_edge_linker(dataset, color, k=1000000, recall_bound=1.0, direction=True)
     if PLOT_EDGES_PRC:
         # computing the precision and recall
         print("computing recall-precision curve for edge_linker")
-        recalls, precisions = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound)
+        recalls, precisions = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound,
+                                                       sub_samples=sub_samples)
         if WRITE_PRC:
             write_precision_recall(precisions, recalls, "results/" + dataset + "PR-el.txt")
 
@@ -273,7 +292,6 @@ if JUST_CLEAN:
     clean_receptors_and_tfs(DATABASE, node_to_id, id_to_node, graph_map)
 else:
     pathway_names = read_pathway_names(DATABASE, cleaned=True)
-    # pathway_names = ["hsa04310"]
     for pathway_name in pathway_names:
         pathlinker = "data/PathLinker_output/" + pathway_name + "k-2000-ranked-edges.txt"
         growingDAGs = "data/GrowingDAGs_output/" + pathway_name + "-edges.txt"
@@ -290,6 +308,12 @@ else:
             pathway = read_pathway(DATABASE, pathway_name, node_to_id)
             subpathway = clean_pathway(DATABASE, pathway, pathway_name, graph_map)
 
+        # subsampled_edges = random.sample(graph, 50 * len(subpathway))
+        # for e in subpathway:
+        #     subsampled_edges.append(e)
+        # sub_edges = [[edge[0], edge[1]] for edge in subsampled_edges]
+        sub_edges = []
+
         total_pathway_lengths += len(subpathway)
 
         # finding the distances of each node from the targets
@@ -297,15 +321,17 @@ else:
             length = nx.multi_source_dijkstra_path_length(G, targets)
             forward_length = nx.multi_source_dijkstra_path_length(forward_G, seeds)
 
-        edge_len = [100000]
+        edge_len = [10000]
         # running the algorithms and get the pathways, true positives, and false positives
         if INCLUDE_GROWING_DAGS:
             pathway_gd, gd_edge_len, gd_recalls, gd_precisions = add_pathlinker(growingDAGs, color=pallet[4],
-                                                                                direction=DIRECTION, name="GrowingDAGs")
+                                                                                direction=DIRECTION, name="GrowingDAGs",
+                                                                                sub_samples=sub_edges)
             edge_len[0] = gd_edge_len
         if INCLUDE_PATHLINKER:
             pathway_pl, pl_edge_len, pl_recalls, pl_precisions = add_pathlinker(pathlinker, color=pallet[0],
-                                                                                direction=DIRECTION, k=edge_len[0])
+                                                                                direction=DIRECTION, k=edge_len[0],
+                                                                                sub_samples=sub_edges)
             if not INCLUDE_GROWING_DAGS:
                 edge_len[0] = pl_edge_len
 
@@ -315,18 +341,20 @@ else:
             pathway_pl = []
 
         pathway_ours, our_recalls, our_precisions = run_algorithm(dataset=pathway_name, method="ours", color=pallet[1],
-                                                                  alpha=ALPHA, c=C, k=edge_len[0], direction=DIRECTION)
+                                                                  alpha=ALPHA, c=C, k=edge_len[0], direction=DIRECTION,
+                                                                  sub_samples=sub_edges)
         if INCLUDE_RWR:
             pathway_rwr, rwr_recalls, rwr_precisions = run_algorithm(dataset=pathway_name, method="rwr",
                                                                      color=pallet[2], k=edge_len[0],
-                                                                     direction=DIRECTION)
+                                                                     direction=DIRECTION, sub_samples=sub_edges)
         else:
             rwr_recalls = []
             rwr_precisions = []
             pathway_rwr = []
         if INCLUDE_EDGE_LINKER:
             pathway_el, el_recalls, el_precisions = run_edge_linker(dataset=pathway_name, color=pallet[3],
-                                                                    k=edge_len[0], direction=DIRECTION)
+                                                                    k=edge_len[0], direction=DIRECTION,
+                                                                    sub_samples=sub_edges)
         else:
             el_recalls = []
             el_precisions = []

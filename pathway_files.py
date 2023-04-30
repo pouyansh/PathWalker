@@ -120,6 +120,8 @@ def compute_intersection(database, pathway_name, receptors, tfs, pathway_edges, 
     for tf in tfs:
         if tf in pathway_nodes:
             sub_tfs.append(tf)
+        if tf in receptors:
+            print(tf)
 
     with open("data/" + database + "/cleaned_pathways/" + pathway_name + "-nodes.txt", 'w') as f:
         f.write("#node\tnode_symbol\n")
