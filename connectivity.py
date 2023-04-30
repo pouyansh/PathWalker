@@ -2,20 +2,24 @@ import networkx as nx
 from matplotlib import pyplot as plt
 from matplotlib import colors as mcolors
 
-from file_methods import read_source_and_destinations, read_nodes
+from file_methods import read_nodes
+
+from pathway_files import read_source_and_destinations, read_pathway_names
 
 colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
+pallet = [colors['black'], colors['red'], colors['grey'], colors['lightgray'], colors['brown']]
 
-datas = ["Alpha6Beta4Integrin", "AndrogenReceptor", "BCR", "BDNF", "CRH", "EGFR1", "FSH", "Hedgehog", "IL1",
-         "IL2", "IL3", "IL4", "IL5", "IL6", "IL9", "IL-7", "KitReceptor", "Leptin", "Notch", "Oncostatin_M",
-         "Prolactin", "RANKL", "TCR", "TGF_beta_Receptor", "TNFalpha", "TSH", "TSLP", "TWEAK", "Wnt"]
+input_graph = "data/interactome.txt"
+graph_type = "directed"
+DATABASE = "KEGG"
+pathway_names = read_pathway_names(DATABASE, cleaned=True)
 
 # defining the bounds for which we want to compute the connectivity
-bounds = [100 * (i + 1) for i in range(25)]
-pallet = [colors['deepskyblue'], colors['silver'], colors['black'], colors['springgreen'], colors['turquoise'],
-          colors['deepskyblue'], colors['dodgerblue'], colors['blue']]
+bounds = [100 * (i + 1) for i in range(20)]
+# pallet = [colors['deepskyblue'], colors['silver'], colors['black'], colors['springgreen'], colors['turquoise'],
+#           colors['deepskyblue'], colors['dodgerblue'], colors['blue']]
 
-methods = ["ours", "rwr", "PathLinker"]
+methods = ["PathLinker", "ours", "rwr", "EdgeLinker"]
 connected_pairs = [[[] for _ in range(len(bounds))] for _ in range(len(methods))]
 
 
@@ -32,7 +36,7 @@ def compute_connected_pairs(filename, sources, destinations, method, nodes_map):
                 if method == "PathLinker":
                     edges.append([nodes_map[sp[0]], nodes_map[sp[1]]])
                 else:
-                    edges.append([int(sp[0]), int(sp[1])])
+                    edges.append([int(float(sp[0])), int(float(sp[1]))])
 
     connected_pairs_data = [0 for _ in range(len(bounds))]
     for i in range(len(bounds)):
@@ -50,24 +54,34 @@ def compute_connected_pairs(filename, sources, destinations, method, nodes_map):
     return connected_pairs_data
 
 
-for data in datas:
-    print(data)
-    pathways = ["results/" + data + "edges-ours.txt", "results/" + data + "edges-rwr.txt",
-                "data/PathLinker_output/" + data + "k-2000-ranked-edges.txt"]
+def get_file_name(method, pathway):
+    if method == "PathLinker":
+        return "data/PathLinker_output/" + pathway + "k-2000-ranked-edges.txt"
+    if method == "EdgeLinker":
+        return "results/" + pathway + "edges-el.txt"
+    return "results/" + pathway + "edges-" + method + ".txt"
 
-    rtf_path = "data/NetPath/" + data + "-nodes.txt"
+
+for pathway_name in pathway_names:
+    print(pathway_name)
+    pathways = ["results/" + pathway_name + "edges-ours.txt", "results/" + pathway_name + "edges-rwr.txt",
+                "data/PathLinker_output/" + pathway_name + "k-2000-ranked-edges.txt"]
+
+    rtf_path = "data/NetPath/" + pathway_name + "-nodes.txt"
     nodes = read_nodes("data/nodes_map.txt")
     # reading seeds and targets
-    seeds, targets = read_source_and_destinations(rtf_path, nodes)
+    seeds, targets = read_source_and_destinations(DATABASE, pathway_name, nodes)
 
     for k in range(len(methods)):
-        connected_pairs_method = compute_connected_pairs(pathways[k], seeds, targets, methods[k], nodes)
+        connected_pairs_method = compute_connected_pairs(get_file_name(methods[k], pathway_name), seeds, targets,
+                                                         methods[k], nodes)
+        print(connected_pairs_method)
 
         for i in range(len(bounds)):
             connected_pairs[k][i].append(connected_pairs_method[i])
 
 for k in range(len(methods)):
-    plt.plot(bounds, [sum(connected_pairs[k][i]) / len(datas) for i in range(len(bounds))], color=pallet[k],
+    plt.plot(bounds, [sum(connected_pairs[k][i]) / len(pathway_names) for i in range(len(bounds))], color=pallet[k],
              label=methods[k])
 plt.ylim(bottom=0, top=1)
 plt.legend()

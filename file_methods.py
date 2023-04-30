@@ -1,7 +1,7 @@
 def write_edges(edges, filename):
     with open(filename, 'w') as f:
         for edge in edges:
-            f.write(str(edge[0]) + " " + str(edge[1]) + "\n")
+            f.write(str(int(edge[0])) + " " + str(int(edge[1])) + "\n")
 
 
 def read_edges(filename):
