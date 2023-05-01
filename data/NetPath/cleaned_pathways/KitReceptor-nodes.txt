@@ -5,17 +5,12 @@ P16871	receptor
 P19235	receptor
 P32927	receptor
 Q92729	receptor
-O60674	tf
 O75030	tf
-P00519	tf
-P15498	tf
-P22681	tf
 P42224	tf
 P42229	tf
-P46108	tf
 P51692	tf
-Q09472	tf
 Q99704	none
+P00519	none
 P42768	none
 P61160	none
 O43516	none
@@ -25,11 +20,13 @@ P49840	none
 Q92934	none
 Q06187	none
 Q13191	none
+P22681	none
 P46109	none
 P62993	none
 P29353	none
 Q96B97	none
 Q00610	none
+P46108	none
 P07332	none
 P09769	none
 P08631	none
@@ -42,6 +39,7 @@ P20936	none
 P12931	none
 P42680	none
 P07947	none
+Q09472	none
 P06241	none
 Q06124	none
 Q9UQC2	none
@@ -49,6 +47,7 @@ Q13588	none
 O15524	none
 Q07889	none
 Q14451	none
+O60674	none
 P52333	none
 P21583	none
 Q13257	none
@@ -66,3 +65,4 @@ Q9ULZ2	none
 P42336	none
 P01112	none
 P04049	none
+P15498	none

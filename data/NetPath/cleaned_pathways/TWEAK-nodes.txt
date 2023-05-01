@@ -1,9 +1,8 @@
 #node	node_symbol
 Q93038	receptor
+Q04206	tf
 Q00653	tf
 Q01201	tf
-Q04206	tf
-Q13547	tf
 Q9NP84	none
 Q13490	none
 Q12933	none
@@ -12,6 +11,7 @@ Q14790	none
 Q13546	none
 O43508	none
 Q86VB7	none
+Q13547	none
 P63000	none
 Q13077	none
 Q13114	none

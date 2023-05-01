@@ -27,22 +27,22 @@ graph_type = "directed"
 ''' 
 These are some boolean variables that define what do we expect from the code 
 '''
-DATABASE = "KEGG"
+DATABASE = "NetPath"
 # methods to run
-RUN_ALGORITHMS = False
-RUN_EDGE_LINKER = False
+RUN_ALGORITHMS = True
+RUN_EDGE_LINKER = True
 JUST_CLEAN = False
 # output
 PLOT_EDGES_PRC = True
 PLOT_NODES_PRC = True
 COMPUTE_RTF = True
 # writing methods
-WRITE_EDGES = False
-WRITE_EDGES_EDGE_LINKER = False
-WRITE_PRC = False
-WRITE_NODES_TO_ID_MAP = False
+WRITE_EDGES = True
+WRITE_EDGES_EDGE_LINKER = True
+WRITE_PRC = True
+WRITE_NODES_TO_ID_MAP = True
 # which methods to include
-INCLUDE_PATHLINKER = True
+INCLUDE_PATHLINKER = False
 INCLUDE_RWR = True
 INCLUDE_EDGE_LINKER = True
 INCLUDE_GROWING_DAGS = False
@@ -320,7 +320,7 @@ else:
             length = nx.multi_source_dijkstra_path_length(G, targets)
             forward_length = nx.multi_source_dijkstra_path_length(forward_G, seeds)
 
-        edge_len = [10000]
+        edge_len = [100000]
         # running the algorithms and get the pathways, true positives, and false positives
         if INCLUDE_GROWING_DAGS:
             pathway_gd, gd_edge_len, gd_recalls, gd_precisions = add_pathlinker(growingDAGs, color=pallet[4],

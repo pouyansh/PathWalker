@@ -1,10 +1,9 @@
 #node	node_symbol
 P32927	receptor
 Q01344	receptor
-O60674	tf
+Q06945	tf
 P42229	tf
 P51692	tf
-Q06945	tf
 Q13905	none
 P46109	none
 P50570	none
@@ -16,6 +15,7 @@ P05771	none
 Q06124	none
 P43405	none
 P63104	none
+O60674	none
 P62993	none
 P29353	none
 Q07889	none
