@@ -43,7 +43,7 @@ WRITE_EDGES_EDGE_LINKER = False
 WRITE_PRC = True
 WRITE_NODES_TO_ID_MAP = False
 # which methods to include
-INCLUDE_PATHLINKER = True
+INCLUDE_PATHLINKER = False
 INCLUDE_RWR = True
 INCLUDE_EDGE_LINKER = True
 INCLUDE_GROWING_DAGS = False
@@ -424,7 +424,7 @@ else:
     if PLOT_EDGES_PRC:
         plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
                        overall_recalls_pl, overall_precisions_pl, overall_recalls_el, overall_precisions_el,
-                       DATABASE + "-overall-edge-PRC", DATABASE, "Edge precision-recall curve", 0.7, 0.45)
+                       DATABASE + "-overall-edge-PRC", DATABASE, "Edge precision-recall curve", 0.7, 1)
 
     if PLOT_NODES_PRC:
         plot_total_prc(overall_node_recalls_ours, overall_node_precisions_ours, overall_node_recalls_rwr,
