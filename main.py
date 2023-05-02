@@ -27,7 +27,7 @@ graph_type = "directed"
 ''' 
 These are some boolean variables that define what do we expect from the code 
 '''
-DATABASE = "NetPath"
+DATABASE = "KEGG"
 # methods to run
 RUN_ALGORITHMS = False
 RUN_EDGE_LINKER = False
