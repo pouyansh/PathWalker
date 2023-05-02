@@ -27,7 +27,7 @@ def read_precision_recall(filename):
             sp = row.split()
             precisions.append(float(sp[0]))
             recalls.append(float(sp[1]))
-    return precisions, recalls
+    return recalls, precisions
 
 
 def write_node_to_id(filename, nodes):
