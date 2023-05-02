@@ -27,7 +27,7 @@ graph_type = "directed"
 ''' 
 These are some boolean variables that define what do we expect from the code 
 '''
-DATABASE = "KEGG"
+DATABASE = "NetPath"
 # methods to run
 RUN_ALGORITHMS = False
 RUN_EDGE_LINKER = False
@@ -234,9 +234,12 @@ def read_pathlinker_output(path):
     return edges
 
 
-def add_pathlinker(path, color, k=1000000, direction=True, name="PathLinker", sub_samples=None):
+def add_pathlinker(dataset, path, color, k=1000000, direction=True, name="PathLinker", sub_samples=None):
     edges = read_pathlinker_output(path)
     recalls, precisions = compute_recall_precision_pathlinker(edges, subpathway, k, direction, sub_samples=sub_samples)
+
+    if WRITE_PRC:
+        write_precision_recall(precisions, recalls, "results/" + dataset + "PR-el.txt")
 
     if PLOT_INDIVIDUAL_PATHWAYS:
         plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
@@ -345,7 +348,8 @@ else:
             edge_len[0] = gd_edge_len
         if INCLUDE_PATHLINKER:
             pathway_pl, pl_edge_len, pl_recalls, pl_precisions = \
-                add_pathlinker(pathlinker, color=pallet[0], direction=DIRECTION, k=edge_len[0], sub_samples=sub_edges)
+                add_pathlinker(pathway_name, pathlinker, color=pallet[0], direction=DIRECTION, k=edge_len[0],
+                               sub_samples=sub_edges)
             if not INCLUDE_GROWING_DAGS:
                 edge_len[0] = pl_edge_len
 
