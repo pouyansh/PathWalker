@@ -57,7 +57,6 @@ def clean_pathway(database, pathway_edges, pathway_name, graph_map):
             sub_edges.append(p)
             check = True
         if not check:
-            # print(id_to_node[p[0]] + " " + id_to_node[p[1]])
             counter += 1
     with open("data/" + database + "/cleaned_pathways/" + pathway_name + "-edges.txt", 'w') as f:
         for p in sub_edges:

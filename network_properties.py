@@ -139,7 +139,7 @@ def plot_prc(our_recall, our_precision, rwr_recall, rwr_precision, pl_recall, pl
     plt.legend()
 
 
-def plot_node_auprc(pathway, our_edges, rwr_edges, pl_edges, el_edges, data, plot_individual=True):
+def plot_node_auprc(pathway, our_edges, rwr_edges, pl_edges, el_edges, data, plot_individual=True, read_data=False):
     pathway_nodes = compute_pathway_nodes(pathway)
 
     our_recall, our_precision = compute_node_auprc(our_edges, pathway_nodes)
@@ -179,13 +179,13 @@ def compute_overall_recall_precision(recalls, precisions):
     return recall, precision
 
 
-def plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
+def plot_total_rtf(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
                    overall_recalls_pl, overall_precisions_pl, overall_recalls_el, overall_precisions_el, name,
                    database, value, bound_y, bound_x, x_label, y_label, include_auc=True):
     recalls_ours, precisions_ours = compute_overall_recall_precision(overall_recalls_ours, overall_precisions_ours)
     write_precision_recall(precisions_ours, recalls_ours, "results/" + name + "-ours.txt")
     recalls_rwr, precisions_rwr = compute_overall_recall_precision(overall_recalls_rwr, overall_precisions_rwr)
-    write_precision_recall(precisions_rwr, recalls_rwr, "results/" + name + "-rwrl.txt")
+    write_precision_recall(precisions_rwr, recalls_rwr, "results/" + name + "-rwr.txt")
     recalls_el, precisions_el = compute_overall_recall_precision(overall_recalls_el, overall_precisions_el)
     write_precision_recall(precisions_el, recalls_el, "results/" + name + "-el.txt")
     recalls_pl, precisions_pl = compute_overall_recall_precision(overall_recalls_pl, overall_precisions_pl)
@@ -195,6 +195,57 @@ def plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recall
     plt.xlim(left=0, right=bound_x)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
+    plot_prc(recalls_ours, precisions_ours, recalls_rwr, precisions_rwr, recalls_pl, precisions_pl, recalls_el,
+             precisions_el, include_auc)
+    plt.savefig("output/" + name + ".png")
+    plt.close()
+
+
+def compute_average_recall_precision(tps, total_len, method="-"):
+    recalls = []
+    precisions = []
+    tp = 0
+    total = 0
+    check = True
+    j = 0
+    while check:
+        count = 0
+        for i in range(len(tps)):
+            if len(tps[i]) > j:
+                count += 1
+                if method == "PathLinker":
+                    tp += tps[i][j][0]
+                    total += tps[i][j][0] + tps[i][j][1]
+                else:
+                    tp += tps[i][j]
+                    total += 1
+            recalls.append(tp / total_len)
+            precisions.append(tp / total)
+        j += 1
+        if count == 0:
+            check = False
+    return recalls, precisions
+
+
+def plot_total_auprc(overall_tps_ours, overall_tps_rwr, overall_tps_pl, overall_tps_el, name, database, value, bound_y,
+                     bound_x, total_len, include_auc=True):
+    recalls_ours, precisions_ours = compute_average_recall_precision(overall_tps_ours, total_len)
+    write_precision_recall(precisions_ours, recalls_ours, "results/" + name + "-ours.txt")
+    recalls_rwr, precisions_rwr = compute_average_recall_precision(overall_tps_rwr, total_len)
+    write_precision_recall(precisions_rwr, recalls_rwr, "results/" + name + "-rwr.txt")
+    recalls_el, precisions_el = compute_average_recall_precision(overall_tps_el, total_len)
+    write_precision_recall(precisions_el, recalls_el, "results/" + name + "-el.txt")
+    if len(overall_tps_pl[0]):
+        recalls_pl, precisions_pl = compute_average_recall_precision(overall_tps_pl, total_len, method="PathLinker")
+        write_precision_recall(precisions_pl, recalls_pl, "results/" + name + "-pl.txt")
+    else:
+        recalls_pl = []
+        precisions_pl = []
+    plt.title(database + "- average " + value)
+    plt.ylim(bottom=0, top=bound_y)
+    plt.xlim(left=0, right=bound_x)
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
     plot_prc(recalls_ours, precisions_ours, recalls_rwr, precisions_rwr, recalls_pl, precisions_pl, recalls_el,
              precisions_el, include_auc)
     plt.savefig("output/" + name + ".png")
