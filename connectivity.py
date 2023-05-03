@@ -71,7 +71,7 @@ for pathway_name in pathway_names:
     pathways = ["results/" + pathway_name + "edges-ours.txt", "results/" + pathway_name + "edges-rwr.txt",
                 "data/PathLinker_output/" + pathway_name + "k-2000-ranked-edges.txt"]
 
-    # reading seeds and targets
+    # reading seeds and targets"Number of edges", "Percentage"
     seeds, targets = read_source_and_destinations(DATABASE, pathway_name, node_to_id)
 
     for k in range(len(methods)):
@@ -85,8 +85,10 @@ for pathway_name in pathway_names:
 for k in range(len(methods)):
     plt.plot(bounds, [sum(connected_pairs[k][i]) / len(pathway_names) for i in range(len(bounds))], color=pallet[k],
              label=methods[k])
-plt.ylim(bottom=0, top=1.1)
+plt.ylim(bottom=0, top=1.05)
 plt.legend()
+plt.xlabel("Number of edges")
+plt.ylabel("Percentage")
 plt.title("Pathway Connectivity - " + graph_type + " edges" + " - " + DATABASE)
 plt.savefig("output/connectivity_" + DATABASE + "_" + graph_type + str(bounds[-1]) + ".png")
 plt.close()

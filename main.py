@@ -22,7 +22,7 @@ pallet = [colors['black'], colors['red'], colors['grey'], colors['lightgray'], c
 # pallet = [colors['navy'], colors['orangered'], colors['dodgerblue'], colors['lightsteelblue']]
 
 input_graph = "data/interactome.txt"
-graph_type = "directed"
+graph_type = "undirected"
 
 ''' 
 These are some boolean variables that define what do we expect from the code 
@@ -40,7 +40,7 @@ PLOT_INDIVIDUAL_PATHWAYS = False
 # writing methods
 WRITE_EDGES = False
 WRITE_EDGES_EDGE_LINKER = False
-WRITE_PRC = True
+WRITE_PRC = False
 WRITE_NODES_TO_ID_MAP = False
 # which methods to include
 INCLUDE_PATHLINKER = False
@@ -50,7 +50,7 @@ INCLUDE_GROWING_DAGS = False
 # pathway
 HAS_CLEANED_PATHWAY = True
 # PRC
-READ_PRC = False
+READ_PRC = True
 # direction
 DIRECTION = False
 # algorithm parameters
@@ -343,7 +343,7 @@ else:
         # running the algorithms and get the pathways, true positives, and false positives
         if INCLUDE_GROWING_DAGS:
             pathway_gd, gd_edge_len, gd_recalls, gd_precisions = \
-                add_pathlinker(growingDAGs, color=pallet[4], direction=DIRECTION, name="GrowingDAGs",
+                add_pathlinker(DATABASE, growingDAGs, color=pallet[4], direction=DIRECTION, name="GrowingDAGs",
                                sub_samples=sub_edges)
             edge_len[0] = gd_edge_len
         if INCLUDE_PATHLINKER:
@@ -424,24 +424,27 @@ else:
     if PLOT_EDGES_PRC:
         plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
                        overall_recalls_pl, overall_precisions_pl, overall_recalls_el, overall_precisions_el,
-                       DATABASE + "-overall-edge-PRC", DATABASE, "Edge precision-recall curve", 0.7, 1)
+                       DATABASE + "-overall-edge-PRC", DATABASE, "Edge precision-recall curve", 0.7, 1, "recall",
+                       "precision")
 
     if PLOT_NODES_PRC:
         plot_total_prc(overall_node_recalls_ours, overall_node_precisions_ours, overall_node_recalls_rwr,
                        overall_node_precisions_rwr, overall_node_recalls_pl, overall_node_precisions_pl,
                        overall_node_recalls_el, overall_node_precisions_el, DATABASE + "-overall-node-PRC", DATABASE,
-                       "Node precision-recall curve", 1.05, 1)
+                       "Node precision-recall curve", 1.05, 1, "recall",
+                       "precision")
 
     if COMPUTE_RTF:
         plot_total_prc([[(i + 1) for i in range(len(r_ours))] for r_ours in overall_r_ours], overall_r_ours,
                        [[(i + 1) for i in range(len(r_rwr))] for r_rwr in overall_r_rwr], overall_r_rwr,
                        [[(i + 1) for i in range(len(r_pl))] for r_pl in overall_r_pl], overall_r_pl,
                        [[(i + 1) for i in range(len(r_el))] for r_el in overall_r_el], overall_r_el,
-                       DATABASE + "-overall-receptors", DATABASE, "percentage of receptors found", 1.05, 2000, False)
+                       DATABASE + "-overall-receptors", DATABASE, "percentage of receptors found", 1.05, 2000,
+                       "Number of edges", "Percentage", False)
 
         plot_total_prc([[(i + 1) for i in range(len(r_ours))] for r_ours in overall_tf_ours], overall_tf_ours,
                        [[(i + 1) for i in range(len(r_rwr))] for r_rwr in overall_tf_rwr], overall_tf_rwr,
                        [[(i + 1) for i in range(len(r_pl))] for r_pl in overall_tf_pl], overall_tf_pl,
                        [[(i + 1) for i in range(len(r_el))] for r_el in overall_tf_el], overall_tf_el,
                        DATABASE + "-overall-tfs", DATABASE, "percentage of transcription factors found", 1.05, 2000,
-                       False)
+                       "Number of edges", "Percentage", False)

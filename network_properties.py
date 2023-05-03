@@ -169,8 +169,11 @@ def compute_overall_recall_precision(recalls, precisions):
                 count += 1
                 r += recalls[k][i]
                 p += precisions[k][i]
-        if count < len(recalls):
-            break
+            else:
+                r += recalls[k][-1]
+                p += precisions[k][-1]
+        # if count < len(recalls):
+        #     break
         recall.append(r / len(recalls))
         precision.append(p / len(recalls))
     return recall, precision
@@ -178,7 +181,7 @@ def compute_overall_recall_precision(recalls, precisions):
 
 def plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
                    overall_recalls_pl, overall_precisions_pl, overall_recalls_el, overall_precisions_el, name,
-                   database, value, bound_y, bound_x, include_auc=True):
+                   database, value, bound_y, bound_x, x_label, y_label, include_auc=True):
     recalls_ours, precisions_ours = compute_overall_recall_precision(overall_recalls_ours, overall_precisions_ours)
     write_precision_recall(precisions_ours, recalls_ours, "results/" + name + "-ours.txt")
     recalls_rwr, precisions_rwr = compute_overall_recall_precision(overall_recalls_rwr, overall_precisions_rwr)
@@ -190,6 +193,8 @@ def plot_total_prc(overall_recalls_ours, overall_precisions_ours, overall_recall
     plt.title(database + "- average " + value)
     plt.ylim(bottom=0, top=bound_y)
     plt.xlim(left=0, right=bound_x)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
     plot_prc(recalls_ours, precisions_ours, recalls_rwr, precisions_rwr, recalls_pl, precisions_pl, recalls_el,
              precisions_el, include_auc)
     plt.savefig("output/" + name + ".png")
