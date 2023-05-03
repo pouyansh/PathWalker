@@ -1,4 +1,5 @@
 import math
+import random
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -34,8 +35,8 @@ RUN_EDGE_LINKER = False
 JUST_CLEAN = False
 # output
 PLOT_EDGES_PRC = True
-PLOT_NODES_PRC = True
-COMPUTE_RTF = True
+PLOT_NODES_PRC = False
+COMPUTE_RTF = False
 PLOT_INDIVIDUAL_PATHWAYS = False
 # writing methods
 WRITE_EDGES = False
@@ -43,7 +44,7 @@ WRITE_EDGES_EDGE_LINKER = False
 WRITE_PRC = True
 WRITE_NODES_TO_ID_MAP = False
 # which methods to include
-INCLUDE_PATHLINKER = True
+INCLUDE_PATHLINKER = False
 INCLUDE_RWR = True
 INCLUDE_EDGE_LINKER = True
 INCLUDE_GROWING_DAGS = False
@@ -54,6 +55,8 @@ READ_PRC = False
 READ_PRC_PL = False
 # direction
 DIRECTION = False
+# subsampling
+SUB_SAMPLE = True
 # algorithm parameters
 ALPHA = 5
 C = 0.25
@@ -118,8 +121,11 @@ def compute_recall_precision(sorted_edges, known_pathway, k, direction, recall_b
     tps = []
     for i in range(min(k, len(sorted_edges))):
         edge = sorted_edges[i]
-        if sub_samples and [edge[0][0], edge[0][1]] in sub_samples:
-            check = True
+        if sub_samples:
+            if edge[0][0] in sub_samples and edge[0][1] in sub_samples[edge[0][0]]:
+                check = True
+            else:
+                check = False
         else:
             check = True
         if check:
@@ -187,14 +193,14 @@ def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_b
         # computing the precision and recall
         print("computing recall-precision curve for " + method)
         if READ_PRC:
-            recalls, precisions = read_precision_recall("results/" + dataset + "PR-" + method + ".txt")
+            recalls, precisions = read_precision_recall("results/" + dataset + "PR-sub-" + method + ".txt")
             recalls = [recalls[i] for i in range(min(k, len(recalls)))]
             precisions = [precisions[i] for i in range(min(k, len(precisions)))]
         else:
             recalls, precisions, tps = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound,
                                                                 sub_samples=sub_samples)
         if WRITE_PRC:
-            write_precision_recall(precisions, recalls, "results/" + dataset + "PR-" + method + ".txt")
+            write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-" + method + ".txt")
 
         if PLOT_INDIVIDUAL_PATHWAYS:
             name = method
@@ -219,8 +225,11 @@ def compute_recall_precision_pathlinker(sorted_edges, known_pathway, k, directio
         tps.append([0, 0])
         while counter < len(sorted_edges) and sorted_edges[counter][2] == ksp:
             edge = sorted_edges[counter]
-            if sub_samples and [edge[0], edge[1]] in sub_samples:
-                check = True
+            if sub_samples:
+                if edge[0] in sub_samples and edge[1] in sub_samples[edge[0]]:
+                    check = True
+                else:
+                    check = False
             else:
                 check = True
             if check:
@@ -230,11 +239,12 @@ def compute_recall_precision_pathlinker(sorted_edges, known_pathway, k, directio
                 else:
                     fp += 1
                     tps[-1][1] += 1
-                counter += 1
-        recalls.append(tp / len(known_pathway))
-        precisions.append(tp / (tp + fp))
-        if recalls[-1] > recall_bound:
-            break
+            counter += 1
+        if tp + fp > 0:
+            recalls.append(tp / len(known_pathway))
+            precisions.append(tp / (tp + fp))
+            if recalls[-1] > recall_bound:
+                break
     return recalls, precisions, tps
 
 
@@ -254,13 +264,13 @@ def add_pathlinker(dataset, path, color, k=1000000, direction=True, name="PathLi
     edges = read_pathlinker_output(path)
     tps = []
     if READ_PRC_PL:
-        recalls, precisions = read_precision_recall("results/" + dataset + "PR-pl.txt")
+        recalls, precisions = read_precision_recall("results/" + dataset + "PR-sub-pl.txt")
     else:
         recalls, precisions, tps = compute_recall_precision_pathlinker(edges, subpathway, k, direction,
                                                                        sub_samples=sub_samples)
 
     if WRITE_PRC:
-        write_precision_recall(precisions, recalls, "results/" + dataset + "PR-pl.txt")
+        write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-pl.txt")
 
     if PLOT_INDIVIDUAL_PATHWAYS:
         plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
@@ -296,12 +306,12 @@ def run_edge_linker(dataset, color, k=1000000, recall_bound=1.0, direction=True,
         # computing the precision and recall
         print("computing recall-precision curve for edge_linker")
         if READ_PRC:
-            recalls, precisions = read_precision_recall("results/" + dataset + "PR-el.txt")
+            recalls, precisions = read_precision_recall("results/" + dataset + "PR-sub-el.txt")
         else:
             recalls, precisions, tps = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound,
                                                                 sub_samples=sub_samples)
         if WRITE_PRC:
-            write_precision_recall(precisions, recalls, "results/" + dataset + "PR-el.txt")
+            write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-el.txt")
 
         if PLOT_INDIVIDUAL_PATHWAYS:
             plt.plot(recalls, precisions, color=color, label="edgeLinker " + str(round(auc(recalls, precisions), 4)))
@@ -328,6 +338,8 @@ if RUN_ALGORITHMS or RUN_EDGE_LINKER:
 total_pathway_lengths = 0
 total_pathway_node_lengths = 0
 
+indices = [i for i in range(len(graph))]
+
 if JUST_CLEAN:
     clean_receptors_and_tfs(DATABASE, node_to_id, id_to_node, graph_map)
 else:
@@ -348,11 +360,31 @@ else:
             pathway = read_pathway(DATABASE, pathway_name, node_to_id)
             subpathway = clean_pathway(DATABASE, pathway, pathway_name, graph_map)
 
-        # subsampled_edges = random.sample(graph, 50 * len(subpathway))
-        # for e in subpathway:
-        #     subsampled_edges.append(e)
-        # sub_edges = [[edge[0], edge[1]] for edge in subsampled_edges]
-        sub_edges = []
+        if SUB_SAMPLE:
+            random.shuffle(indices)
+            sub_graph = {}
+            for j in range(50 * len(subpathway)):
+                e = graph[indices[j]]
+                if e[0] not in sub_graph:
+                    sub_graph[e[0]] = []
+                if e[1] not in sub_graph[e[0]]:
+                    sub_graph[e[0]].append(e[1])
+                    if graph_type == "undirected":
+                        if e[1] not in sub_graph:
+                            sub_graph[e[1]] = []
+                        sub_graph[e[1]].append(e[0])
+            for e in subpathway:
+                if e[0] not in sub_graph:
+                    sub_graph[e[0]] = []
+                if e[1] not in sub_graph[e[0]]:
+                    sub_graph[e[0]].append(e[1])
+                    if graph_type == "undirected":
+                        if e[1] not in sub_graph:
+                            sub_graph[e[1]] = []
+                        sub_graph[e[1]].append(e[0])
+        else:
+            sub_graph = []
+        print("here")
 
         total_pathway_lengths += len(subpathway)
 
@@ -366,12 +398,12 @@ else:
         if INCLUDE_GROWING_DAGS:
             pathway_gd, gd_edge_len, gd_recalls, gd_precisions, gd_tps = \
                 add_pathlinker(DATABASE, growingDAGs, color=pallet[4], direction=DIRECTION, name="GrowingDAGs",
-                               sub_samples=sub_edges)
+                               sub_samples=sub_graph)
             edge_len[0] = gd_edge_len
         if INCLUDE_PATHLINKER:
             pathway_pl, pl_edge_len, pl_recalls, pl_precisions, pl_tps = \
                 add_pathlinker(pathway_name, pathlinker, color=pallet[0], direction=DIRECTION, k=edge_len[0],
-                               sub_samples=sub_edges)
+                               sub_samples=sub_graph)
             if not INCLUDE_GROWING_DAGS:
                 edge_len[0] = pl_edge_len
 
@@ -383,11 +415,11 @@ else:
 
         pathway_ours, our_recalls, our_precisions, our_tps = \
             run_algorithm(dataset=pathway_name, method="ours", color=pallet[1], alpha=ALPHA, c=C, k=edge_len[0],
-                          direction=DIRECTION, sub_samples=sub_edges)
+                          direction=DIRECTION, sub_samples=sub_graph)
         if INCLUDE_RWR:
             pathway_rwr, rwr_recalls, rwr_precisions, rwr_tps = \
                 run_algorithm(dataset=pathway_name, method="rwr", color=pallet[2], k=edge_len[0], direction=DIRECTION,
-                              sub_samples=sub_edges)
+                              sub_samples=sub_graph)
         else:
             rwr_recalls = []
             rwr_precisions = []
@@ -396,7 +428,7 @@ else:
         if INCLUDE_EDGE_LINKER:
             pathway_el, el_recalls, el_precisions, el_tps = \
                 run_edge_linker(dataset=pathway_name, color=pallet[3], k=edge_len[0], direction=DIRECTION,
-                                sub_samples=sub_edges)
+                                sub_samples=sub_graph)
         else:
             el_recalls = []
             el_precisions = []
@@ -455,8 +487,8 @@ else:
     if PLOT_EDGES_PRC:
         plot_total_rtf(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
                        overall_recalls_pl, overall_precisions_pl, overall_recalls_el, overall_precisions_el,
-                       DATABASE + "-overall-edge-PRC", DATABASE, "Edge precision-recall curve", 0.7, 0.45, "recall",
-                       "precision")
+                       DATABASE + "-overall-edge-PRC", DATABASE, "Edge precision-recall curve - sub-sampled edges",
+                       1.05, 1, "recall", "precision")
 
     if PLOT_NODES_PRC:
         plot_total_rtf(overall_node_recalls_ours, overall_node_precisions_ours, overall_node_recalls_rwr,
@@ -479,3 +511,5 @@ else:
                        [[(i + 1) for i in range(len(r_el))] for r_el in overall_tf_el], overall_tf_el,
                        DATABASE + "-overall-tfs", DATABASE, "percentage of transcription factors found", 1.05, 2000,
                        "Number of edges", "Percentage", False)
+
+    print(total_pathway_lengths)

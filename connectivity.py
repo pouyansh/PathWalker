@@ -10,7 +10,7 @@ pallet = [colors['black'], colors['red'], colors['grey'], colors['lightgray'], c
 
 input_graph = "data/interactome.txt"
 graph_type = "directed"
-DATABASE = "KEGG"
+DATABASE = "NetPath"
 pathway_names = read_pathway_names(DATABASE, cleaned=True)
 
 # defining the bounds for which we want to compute the connectivity
@@ -19,6 +19,7 @@ bounds = [200 * (i + 1) for i in range(10)]
 #           colors['deepskyblue'], colors['dodgerblue'], colors['blue']]
 
 methods = ["PathLinker", "ours", "rwr", "EdgeLinker"]
+labels = ["PathLinker", "PathWalker", "rwr", "EdgeLinker"]
 connected_pairs = [[[] for _ in range(len(bounds))] for _ in range(len(methods))]
 
 
@@ -84,7 +85,7 @@ for pathway_name in pathway_names:
 
 for k in range(len(methods)):
     plt.plot(bounds, [sum(connected_pairs[k][i]) / len(pathway_names) for i in range(len(bounds))], color=pallet[k],
-             label=methods[k])
+             label=labels[k])
 plt.ylim(bottom=0, top=1.05)
 plt.legend()
 plt.xlabel("Number of edges")
