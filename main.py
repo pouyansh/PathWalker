@@ -44,7 +44,7 @@ WRITE_EDGES_EDGE_LINKER = False
 WRITE_PRC = True
 WRITE_NODES_TO_ID_MAP = False
 # which methods to include
-INCLUDE_PATHLINKER = False
+INCLUDE_PATHLINKER = True
 INCLUDE_RWR = True
 INCLUDE_EDGE_LINKER = True
 INCLUDE_GROWING_DAGS = False
@@ -307,6 +307,8 @@ def run_edge_linker(dataset, color, k=1000000, recall_bound=1.0, direction=True,
         print("computing recall-precision curve for edge_linker")
         if READ_PRC:
             recalls, precisions = read_precision_recall("results/" + dataset + "PR-sub-el.txt")
+            recalls = [recalls[i] for i in range(min(k, len(recalls)))]
+            precisions = [precisions[i] for i in range(min(k, len(precisions)))]
         else:
             recalls, precisions, tps = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound,
                                                                 sub_samples=sub_samples)
@@ -488,7 +490,7 @@ else:
         plot_total_rtf(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
                        overall_recalls_pl, overall_precisions_pl, overall_recalls_el, overall_precisions_el,
                        DATABASE + "-overall-edge-PRC", DATABASE, "Edge precision-recall curve - sub-sampled edges",
-                       1.05, 1, "recall", "precision")
+                       1.05, 0.45, "recall", "precision")
 
     if PLOT_NODES_PRC:
         plot_total_rtf(overall_node_recalls_ours, overall_node_precisions_ours, overall_node_recalls_rwr,
