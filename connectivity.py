@@ -6,7 +6,7 @@ from utils import reader
 from pathway_files import read_source_and_destinations, read_pathway_names
 
 colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
-pallet = [colors['black'], colors['red'], colors['grey'], colors['lightgray'], colors['brown']]
+pallet = [colors['red'], colors['grey'], colors['lightgray'], colors['brown']]
 
 input_graph = "data/interactome.txt"
 graph_type = "directed"

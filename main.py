@@ -28,7 +28,7 @@ graph_type = "undirected"
 ''' 
 These are some boolean variables that define what do we expect from the code 
 '''
-DATABASE = "KEGG"
+DATABASE = "NetPath"
 # methods to run
 RUN_ALGORITHMS = False
 RUN_EDGE_LINKER = False
@@ -41,7 +41,7 @@ PLOT_INDIVIDUAL_PATHWAYS = False
 # writing methods
 WRITE_EDGES = False
 WRITE_EDGES_EDGE_LINKER = False
-WRITE_PRC = True
+WRITE_PRC = False
 WRITE_NODES_TO_ID_MAP = False
 # which methods to include
 INCLUDE_PATHLINKER = True
@@ -51,12 +51,12 @@ INCLUDE_GROWING_DAGS = False
 # pathway
 HAS_CLEANED_PATHWAY = True
 # PRC
-READ_PRC = False
-READ_PRC_PL = False
+READ_PRC = True
+READ_PRC_PL = True
 # direction
 DIRECTION = False
 # subsampling
-SUB_SAMPLE = True
+SUB_SAMPLE = False
 # algorithm parameters
 ALPHA = 5
 C = 0.25
@@ -193,14 +193,20 @@ def run_algorithm(dataset, method, color, alpha=0.0, c=0.15, k=1000000, recall_b
         # computing the precision and recall
         print("computing recall-precision curve for " + method)
         if READ_PRC:
-            recalls, precisions = read_precision_recall("results/" + dataset + "PR-sub-" + method + ".txt")
+            if SUB_SAMPLE:
+                recalls, precisions = read_precision_recall("results/" + dataset + "PR-sub-" + method + ".txt")
+            else:
+                recalls, precisions = read_precision_recall("results/" + dataset + "PR-" + method + ".txt")
             recalls = [recalls[i] for i in range(min(k, len(recalls)))]
             precisions = [precisions[i] for i in range(min(k, len(precisions)))]
         else:
             recalls, precisions, tps = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound,
                                                                 sub_samples=sub_samples)
         if WRITE_PRC:
-            write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-" + method + ".txt")
+            if SUB_SAMPLE:
+                write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-" + method + ".txt")
+            else:
+                write_precision_recall(precisions, recalls, "results/" + dataset + "PR-" + method + ".txt")
 
         if PLOT_INDIVIDUAL_PATHWAYS:
             name = method
@@ -264,13 +270,19 @@ def add_pathlinker(dataset, path, color, k=1000000, direction=True, name="PathLi
     edges = read_pathlinker_output(path)
     tps = []
     if READ_PRC_PL:
-        recalls, precisions = read_precision_recall("results/" + dataset + "PR-sub-pl.txt")
+        if SUB_SAMPLE:
+            recalls, precisions = read_precision_recall("results/" + dataset + "PR-sub-pl.txt")
+        else:
+            recalls, precisions = read_precision_recall("results/" + dataset + "PR-pl.txt")
     else:
         recalls, precisions, tps = compute_recall_precision_pathlinker(edges, subpathway, k, direction,
                                                                        sub_samples=sub_samples)
 
     if WRITE_PRC:
-        write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-pl.txt")
+        if SUB_SAMPLE:
+            write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-pl.txt")
+        else:
+            write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-pl.txt")
 
     if PLOT_INDIVIDUAL_PATHWAYS:
         plt.plot(recalls, precisions, color=color, label=name + " " + str(round(auc(recalls, precisions), 4)))
@@ -306,14 +318,20 @@ def run_edge_linker(dataset, color, k=1000000, recall_bound=1.0, direction=True,
         # computing the precision and recall
         print("computing recall-precision curve for edge_linker")
         if READ_PRC:
-            recalls, precisions = read_precision_recall("results/" + dataset + "PR-sub-el.txt")
+            if SUB_SAMPLE:
+                recalls, precisions = read_precision_recall("results/" + dataset + "PR-sub-el.txt")
+            else:
+                recalls, precisions = read_precision_recall("results/" + dataset + "PR-el.txt")
             recalls = [recalls[i] for i in range(min(k, len(recalls)))]
             precisions = [precisions[i] for i in range(min(k, len(precisions)))]
         else:
             recalls, precisions, tps = compute_recall_precision(sorted_edges, subpathway, k, direction, recall_bound,
                                                                 sub_samples=sub_samples)
         if WRITE_PRC:
-            write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-el.txt")
+            if SUB_SAMPLE:
+                write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-el.txt")
+            else:
+                write_precision_recall(precisions, recalls, "results/" + dataset + "PR-sub-el.txt")
 
         if PLOT_INDIVIDUAL_PATHWAYS:
             plt.plot(recalls, precisions, color=color, label="edgeLinker " + str(round(auc(recalls, precisions), 4)))
@@ -489,7 +507,7 @@ else:
     if PLOT_EDGES_PRC:
         plot_total_rtf(overall_recalls_ours, overall_precisions_ours, overall_recalls_rwr, overall_precisions_rwr,
                        overall_recalls_pl, overall_precisions_pl, overall_recalls_el, overall_precisions_el,
-                       DATABASE + "-overall-edge-PRC", DATABASE, "Edge precision-recall curve - sub-sampled edges",
+                       DATABASE + "-overall-edge-PRC", DATABASE, "Edge precision-recall curve",
                        1.05, 0.45, "recall", "precision")
 
     if PLOT_NODES_PRC:

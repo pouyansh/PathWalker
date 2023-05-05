@@ -190,6 +190,7 @@ def plot_total_rtf(overall_recalls_ours, overall_precisions_ours, overall_recall
     write_precision_recall(precisions_el, recalls_el, "results/" + name + "-el.txt")
     recalls_pl, precisions_pl = compute_overall_recall_precision(overall_recalls_pl, overall_precisions_pl)
     write_precision_recall(precisions_pl, recalls_pl, "results/" + name + "-pl.txt")
+    # plt.figure(figsize=(10, 4))
     plt.title(database + "- average " + value)
     plt.ylim(bottom=0, top=bound_y)
     plt.xlim(left=0, right=bound_x)
