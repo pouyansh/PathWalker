@@ -1,5 +1,11 @@
 # PathWalker
 
+*Course project of CS 5854:* Computational Systems Biology
+
+*Authors:* Pouyan Shirzadian, Neeti Gandhi, and Shivansh Mathur
+
+*Course instructor:* Dr. Murali
+
 In this work, we present a robust algorithm, PathWalker, that improves the power of RWR method in reconstructing pathways by inspiring ideas from the PathLinker algorithm, resulting in a pathway with an accuracy higher than both algorithms.
 
 The pathway constructed by the RWR algorithm is concentrated over a neighborhood of the set of receptors and up until the first few hundred edges, does not find paths connecting receptors to the set of transcription factors. The reason for this phenomenon is that in the RWR algorithm, the choice of picking the next vertex is independent of the set of transcription factors; i.e, if the random walker is at a vertex u, then he/she chooses the next vertex to visit randomly from the set of neighbors of u. Instead, in the PathWalker algorithm, we give a higher priority to the neighbors of u that are closer to the set of transcription factors. Next, we describe the details of the algorithm.
